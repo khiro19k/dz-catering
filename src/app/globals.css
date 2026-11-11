@@ -1,0 +1,148 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+@import "tailwindcss";
+@import "lenis/dist/lenis.css";
+
+@theme {
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
+
+  /* DZ Catering True Brand Colors with #63002e as primary base */
+  --color-burgundy-950: #350018;
+  --color-burgundy-900: #460020;
+  --color-burgundy-850: #520026;
+  --color-burgundy-800: #5b002a;
+  --color-burgundy-700: #63002e;
+  --color-burgundy-600: #7a0439;
+  --color-burgundy-500: #940745;
+
+  --color-gold-200: #f5eedc;
+  --color-gold-300: #ebdca9;
+  --color-gold-400: #dfcf9e;
+  --color-gold-500: #cab67f;
+  --color-gold-600: #b59c5d;
+  --color-gold-700: #937d44;
+
+  --color-cream-50: #ffffff;
+  --color-cream-100: #fdfbf7;
+  --color-cream-200: #f7f2e7;
+}
+
+/* Fluid responsive root font size scaling */
+html {
+  font-size: 15px;
+}
+
+@media (min-width: 640px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 1024px) {
+  html {
+    /* Scales content proportionally with viewport width on desktop screens */
+    font-size: calc(13px + 0.35vw);
+  }
+}
+
+@media (min-width: 1920px) {
+  html {
+    /* Caps max size for ultra-wide screens to prevent over-scaling */
+    font-size: 19.5px;
+  }
+}
+
+:root {
+  --background: #63002e;
+  --foreground: #ffffff;
+  --brand-burgundy: #63002e;
+  --brand-gold: #cab67f;
+  --brand-cream: #fdfbf7;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+/* Scrollbar utilities */
+.scrollbar-none::-webkit-scrollbar,
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-none,
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Subtle entrance animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Infinite Seamless Marquee Carousel */
+@keyframes marqueeScroll {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.animate-marquee-infinite {
+  display: flex;
+  width: max-content;
+  animation: marqueeScroll 45s linear infinite;
+  will-change: transform;
+  user-select: none;
+}
+
+.animate-marquee-infinite:hover {
+  animation-play-state: paused;
+}
+
+/* Gradient Mask for Smooth Faded Edges */
+.mask-marquee-fade {
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 8%,
+    black 92%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 8%,
+    black 92%,
+    transparent 100%
+  );
+}

@@ -58,6 +58,8 @@ export interface SushiConveyorMenuProps extends React.ComponentProps<"section"> 
   labels?: SushiConveyorMenuLabels;
   /** Whether to show the previous/pause/next control buttons below the belt. Defaults to false. */
   showControls?: boolean;
+  /** Whether to show the tier legend list below the heading. Defaults to false. */
+  showLegend?: boolean;
 }
 
 const SPACING = 1.35;
@@ -244,6 +246,7 @@ export function SushiConveyorMenu({
   legend,
   labels = DEFAULT_LABELS,
   showControls = false,
+  showLegend = false,
   className,
   ref,
   ...rest
@@ -734,7 +737,7 @@ export function SushiConveyorMenu({
     <div className={wide ? "flex flex-col items-start gap-4 text-left" : "flex flex-col items-center gap-2 px-2 text-center"}>
       {eyebrow && <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-muted-foreground">{eyebrow}</p>}
       {heading && <h2 className={`text-balance font-medium tracking-tight ${wide ? "text-4xl leading-[1.1] xl:text-[2.75rem]" : "text-2xl md:text-3xl"}`}>{heading}</h2>}
-      {tiers.length > 0 && (
+      {showLegend && tiers.length > 0 && (
         <ul aria-hidden="true" data-legend className={`mt-1 flex flex-wrap items-center gap-x-3.5 gap-y-1.5 text-[11px] tabular-nums text-muted-foreground ${wide ? "justify-start" : "justify-center"} ${narrow ? "max-w-[15rem]" : ""}`}>
           {tiers.map((entry) => (
             <li key={entry.tier} className="inline-flex items-center gap-1.5">

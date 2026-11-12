@@ -1049,15 +1049,44 @@ function DishDialog({ uid, item, index, total, labels, reduced, broken, source, 
   };
 
   return createPortal(
-    <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={titleId} data-dish-dialog className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto p-4 text-foreground sm:p-8" onKeyDown={onKeyDown}>
-      <div aria-hidden="true" className={`absolute inset-0 bg-background/80 backdrop-blur-md transition-opacity duration-300 motion-reduce:transition-none ${shown ? "opacity-100" : "opacity-0"}`} onClick={dismiss} />
-      <div className="relative grid w-full max-w-[52rem] items-center gap-6 p-5 sm:grid-cols-[minmax(0,1fr)_minmax(0,19rem)] sm:gap-10 sm:p-8">
-        <div aria-hidden="true" className={`absolute inset-0 rounded-[2rem] border border-[#cab67f]/30 bg-[#220010] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] transition-[opacity,scale] duration-300 motion-reduce:transition-none ${shown ? "scale-100 opacity-100" : "scale-[0.97] opacity-0"}`} />
-        <button ref={closeRef} type="button" onClick={dismiss} className={`absolute right-4 top-4 z-10 inline-flex items-center gap-1.5 rounded-full border border-[#cab67f]/20 bg-[#350018]/60 px-3 py-1.5 text-xs font-medium text-[#cab67f] outline-none transition-all hover:bg-[#cab67f] hover:text-[#20000e] focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none ${shown ? "opacity-100" : "opacity-0"}`}>
-          {labels.close}
-          <svg aria-hidden="true" viewBox="0 0 16 16" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9" /></svg>
-        </button>
-        <div ref={figureRef} data-dish-figure className="relative mx-auto aspect-square w-full max-w-[min(42vh,22rem)]">
+    <div
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={titleId}
+      data-dish-dialog
+      className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4 sm:p-8 text-foreground"
+      onKeyDown={onKeyDown}
+    >
+      <div
+        aria-hidden="true"
+        className={`fixed inset-0 bg-black/85 backdrop-blur-md transition-opacity duration-300 motion-reduce:transition-none ${shown ? "opacity-100" : "opacity-0"}`}
+        onClick={dismiss}
+      />
+
+      {/* Floating screen-level close button for guaranteed visibility and easy tap on mobile and desktop */}
+      <button
+        ref={closeRef}
+        type="button"
+        onClick={dismiss}
+        aria-label={labels.close}
+        className={`fixed right-4 top-4 sm:right-6 sm:top-6 z-[60] flex size-11 items-center justify-center rounded-full border border-[#cab67f]/50 bg-[#2b0013]/95 text-[#ebdca9] shadow-2xl backdrop-blur-md transition-all hover:bg-[#cab67f] hover:text-[#20000e] active:scale-90 ${shown ? "opacity-100 scale-100" : "opacity-0 scale-90 pointer-events-none"}`}
+      >
+        <svg aria-hidden="true" viewBox="0 0 16 16" className="size-5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+          <path d="M3.5 3.5l9 9M12.5 3.5l-9 9" />
+        </svg>
+      </button>
+
+      <div className="relative my-auto grid w-full max-w-[52rem] items-center gap-6 p-5 sm:grid-cols-[minmax(0,1fr)_minmax(0,19rem)] sm:gap-10 sm:p-8">
+        <div
+          aria-hidden="true"
+          className={`absolute inset-0 rounded-[2rem] border border-[#cab67f]/30 bg-[#220010] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] transition-[opacity,scale] duration-300 motion-reduce:transition-none ${shown ? "scale-100 opacity-100" : "scale-[0.97] opacity-0"}`}
+        />
+        <div
+          ref={figureRef}
+          data-dish-figure
+          className="relative mx-auto aspect-square w-full max-w-[min(26vh,13rem)] sm:max-w-[min(42vh,22rem)]"
+        >
           <span aria-hidden="true" className="absolute inset-x-[8%] bottom-[-4%] top-[14%] rounded-full bg-black opacity-25 blur-2xl dark:opacity-70" />
           {broken ? (
             <span aria-hidden="true" className="absolute inset-[3%] rounded-full border border-border bg-muted">
@@ -1068,26 +1097,57 @@ function DishDialog({ uid, item, index, total, labels, reduced, broken, source, 
           )}
           <span aria-hidden="true" className={`absolute -inset-[1.5%] rounded-full border-[3px] ${tier.ring}`} />
         </div>
-        <div className={`relative flex flex-col gap-3 text-center transition-[opacity,translate] delay-150 duration-500 motion-reduce:transition-none sm:text-left ${shown ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"}`}>
-          <p className="flex items-center justify-center gap-2 font-mono text-[11px] tracking-[0.2em] text-muted-foreground sm:justify-start">
+        <div
+          className={`relative flex flex-col gap-3 text-center transition-[opacity,translate] delay-150 duration-500 motion-reduce:transition-none sm:text-left ${shown ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"}`}
+        >
+          <p className="flex items-center justify-center gap-2 font-mono text-[11px] tracking-[0.2em] text-[#cab67f] sm:justify-start">
             <span aria-hidden="true" className={`size-2 rounded-full ${tier.dot}`} />
             {pad(index + 1)} / {pad(total)}
           </p>
-          <h3 id={titleId} className="text-2xl font-medium tracking-tight sm:text-3xl">{item.name}</h3>
-          {item.description && <p className="text-sm leading-relaxed text-muted-foreground">{item.description}</p>}
+          <h3 id={titleId} className="font-serif text-2xl font-medium tracking-tight text-amber-100 sm:text-3xl">
+            {item.name}
+          </h3>
+          {item.description && <p className="text-sm leading-relaxed text-amber-100/80">{item.description}</p>}
           {item.details && item.details.length > 0 && (
             <ul className="flex flex-wrap justify-center gap-2 sm:justify-start">
-              {item.details.map((detail) => <li key={detail} className="rounded-full border border-[#cab67f]/25 bg-[#300016]/80 px-3.5 py-1 text-xs text-amber-100/90 shadow-sm">{detail}</li>)}
+              {item.details.map((detail) => (
+                <li
+                  key={detail}
+                  className="rounded-full border border-[#cab67f]/25 bg-[#300016]/80 px-3.5 py-1 text-xs text-amber-100/90 shadow-sm"
+                >
+                  {detail}
+                </li>
+              ))}
             </ul>
           )}
-          <div className="mt-2 flex flex-wrap items-center justify-center gap-4 sm:justify-start">
-            <p className="text-2xl font-semibold tabular-nums tracking-tight">{item.price}</p>
-            <button type="button" data-add onClick={add} className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#ebdca9] via-[#cab67f] to-[#b39855] px-6 py-2.5 text-sm font-semibold text-[#20000e] shadow-lg shadow-[#cab67f]/20 outline-none transition-[translate,box-shadow,brightness] hover:-translate-y-px hover:brightness-110 hover:shadow-xl focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 motion-reduce:transition-none">
-              {added
-                ? <svg aria-hidden="true" viewBox="0 0 16 16" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M3.5 8.5l3 3 6-7" /></svg>
-                : <svg aria-hidden="true" viewBox="0 0 16 16" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M8 3.5v9M3.5 8h9" /></svg>}
-              {labels.add}
-            </button>
+          <div className="mt-2 flex flex-wrap items-center justify-center gap-3 sm:justify-start">
+            <p className="text-xl sm:text-2xl font-serif font-semibold tracking-tight text-gold-300">{item.price}</p>
+            <div className="flex w-full sm:w-auto items-center justify-center gap-2">
+              <button
+                type="button"
+                data-add
+                onClick={add}
+                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#ebdca9] via-[#cab67f] to-[#b39855] px-6 py-2.5 text-sm font-semibold text-[#20000e] shadow-lg shadow-[#cab67f]/20 outline-none transition-[translate,box-shadow,brightness] hover:-translate-y-px hover:brightness-110 hover:shadow-xl focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 motion-reduce:transition-none"
+              >
+                {added ? (
+                  <svg aria-hidden="true" viewBox="0 0 16 16" className="size-4" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3.5 8.5l3 3 6-7" />
+                  </svg>
+                ) : (
+                  <svg aria-hidden="true" viewBox="0 0 16 16" className="size-4" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                    <path d="M8 3.5v9M3.5 8h9" />
+                  </svg>
+                )}
+                {labels.add}
+              </button>
+              <button
+                type="button"
+                onClick={dismiss}
+                className="sm:hidden inline-flex items-center justify-center rounded-full border border-[#cab67f]/30 bg-[#350018]/80 px-4 py-2.5 text-sm font-medium text-amber-200 transition-colors hover:bg-[#cab67f]/20"
+              >
+                {labels.close}
+              </button>
+            </div>
           </div>
         </div>
       </div>

@@ -831,16 +831,7 @@ export function SushiConveyorMenu({
             <path d={paths.island} style={{ fill: "var(--island-wall)" }} />
             <path d={paths.island} transform={`translate(0 ${(-g.side * 0.6).toFixed(1)})`} style={{ fill: `url(#${uid}-island)` }} />
             <path d={paths.island} transform={`translate(0 ${(-g.side * 0.6 - 0.6).toFixed(1)})`} fill="none" stroke="#cab67f" strokeOpacity={0.55} strokeWidth={Math.max(1, g.d * 0.01)} />
-            <text
-              x={g.cx}
-              y={g.ym - g.side * 0.6 + 4}
-              textAnchor="middle"
-              fill="#cab67f"
-              fillOpacity={0.65}
-              className="font-serif tracking-[0.28em] text-[10px] sm:text-xs uppercase pointer-events-none select-none font-semibold"
-            >
-              DZ CATERING · TABLE ROYALE
-            </text>
+
           </svg>
         )}
       </div>

@@ -156,7 +156,7 @@ export default function PrestigeBuffetSection() {
           <SushiConveyorMenu
             items={PRESTIGE_BUFFET_DISHES}
             eyebrow="DZ CATERING · HAUTE GASTRONOMIE"
-            heading="Table de Présentation Prestige"
+            heading="Vous pouvez demander une dégustation de nos meilleurs plats"
             autoplay={true}
             speed={22}
             interval={5000}

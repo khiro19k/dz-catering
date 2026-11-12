@@ -147,8 +147,7 @@ export default function PrestigeBuffetSection() {
             L&apos;Excellence Gastronomique en <span className="italic text-gold-400 font-serif">Mouvement</span>
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-amber-100/70 sm:text-base">
-            Faites pivoter la table de présentation, survolez pour admirer les créations artisanales du Chef,
-            ou cliquez sur une pièce pour en découvrir la composition et l&apos;ajouter à votre demande de devis.
+            Une sélection raffinée de créations culinaires et d&apos;artisanat gastronomique pour vos réceptions de prestige et déjeuners d&apos;affaires.
           </p>
         </div>
 
@@ -159,7 +158,6 @@ export default function PrestigeBuffetSection() {
             legend={PRESTIGE_TIER_LEGEND}
             eyebrow="DZ CATERING · HAUTE GASTRONOMIE"
             heading="Table de Présentation Prestige"
-            caption="Faites glisser ou survolez la table pour faire défiler les créations. Cliquez sur un plat pour afficher sa fiche détaillée."
             autoplay={true}
             speed={22}
             interval={3400}

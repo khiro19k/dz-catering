@@ -160,7 +160,7 @@ export default function PrestigeBuffetSection() {
             heading="Table de Présentation Prestige"
             autoplay={true}
             speed={22}
-            interval={3400}
+            interval={5000}
             onAdd={handleAddDish}
             action={
               <a

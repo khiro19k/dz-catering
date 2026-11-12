@@ -599,15 +599,17 @@ export function SushiConveyorMenu({
       autoActive.current = index;
       setActive(index);
       seekTo(index);
+      const holdDuration = Math.max(1400, Math.round(interval * 0.7));
       timer = window.setTimeout(() => {
         if (autoActive.current === index) {
           autoActive.current = null;
           if (live.current.active === index) setActive(null);
         }
-        timer = window.setTimeout(show, Math.max(300, interval - HOLD));
-      }, HOLD);
+        timer = window.setTimeout(show, Math.max(400, interval - holdDuration));
+      }, holdDuration);
     };
-    timer = window.setTimeout(show, autoLast.current === null ? 1600 : Math.max(300, interval - HOLD));
+    const holdDuration = Math.max(1400, Math.round(interval * 0.7));
+    timer = window.setTimeout(show, autoLast.current === null ? 1600 : Math.max(400, interval - holdDuration));
     return () => window.clearTimeout(timer);
   }, [playing, reduced, paused, openIndex, count, interval, geoReady, setActive, seekTo]);
 

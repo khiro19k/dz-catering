@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import TrustProofSection from "@/components/TrustProofSection";
 import HomeFormulesOverview from "@/components/HomeFormulesOverview";
+import PrestigeBuffetSection from "@/components/PrestigeBuffetSection";
 import GallerySection from "@/components/GallerySection";
 import BespokeCurator from "@/components/BespokeCurator";
 import Footer from "@/components/Footer";
@@ -14,6 +15,7 @@ export default function Home() {
         <Hero />
         <TrustProofSection />
         <HomeFormulesOverview />
+        <PrestigeBuffetSection />
         <GallerySection />
         <BespokeCurator />
       </main>

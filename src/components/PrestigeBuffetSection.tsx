@@ -153,7 +153,7 @@ export default function PrestigeBuffetSection() {
         </div>
 
         {/* 3D Buffet Conveyor Table */}
-        <div className="relative rounded-[2.5rem] border border-gold-500/25 bg-[#20000e]/80 p-4 shadow-[0_30px_90px_rgba(0,0,0,0.8)] backdrop-blur-md sm:p-8">
+        <div className="relative rounded-[2.5rem] border border-gold-500/25 bg-[#20000e] p-4 shadow-[0_30px_90px_rgba(0,0,0,0.8)] sm:p-8">
           <SushiConveyorMenu
             items={PRESTIGE_BUFFET_DISHES}
             legend={PRESTIGE_TIER_LEGEND}

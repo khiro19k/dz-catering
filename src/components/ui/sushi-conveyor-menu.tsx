@@ -339,12 +339,7 @@ export function SushiConveyorMenu({
     const g = L.geo;
     const s = sim.current;
     if (!g) return;
-    seamRef.current?.setAttribute("d", slatPath(g, s.offset, 0));
-    glintRef.current?.setAttribute("d", slatPath(g, s.offset, -Math.max(1.4, g.d * 0.024)));
-    const v = (Math.abs(s.v) < 0.005 ? 0 : s.v).toFixed(2);
-    if (v !== s.published) { s.published = v; beltRef.current?.style.setProperty("--belt-v", v); }
-    const c = centerOf(g, s.offset);
-    if (c !== s.center) { s.center = c; setCenter(c); }
+    s.center = centerOf(g, s.offset);
   }, []);
 
   const paintAll = React.useCallback(() => {
@@ -808,26 +803,22 @@ export function SushiConveyorMenu({
         {g && paths && (
           <svg className="absolute left-0 top-0 overflow-visible" width={g.width} height={g.height} viewBox={`0 0 ${g.width} ${g.height}`} focusable="false">
             <defs>
-              <filter id={`${uid}-soft`} x="-10%" y="-30%" width="120%" height="160%">
-                <feGaussianBlur stdDeviation={(g.d * 0.06).toFixed(1)} />
-              </filter>
-              <filter id={`${uid}-gold-glow`} x="-20%" y="-20%" width="140%" height="140%">
-                <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#cab67f" floodOpacity="0.4" />
-              </filter>
               <linearGradient id={`${uid}-island`} x1="0" x2="0" y1="0" y2="1">
                 <stop offset="0" style={{ stopColor: "var(--island)" }} />
                 <stop offset="1" style={{ stopColor: "var(--island-low)" }} />
               </linearGradient>
             </defs>
-            <path d={paths.outer} transform={`translate(0 ${(g.side + g.d * 0.07).toFixed(1)})`} fill="black" className="opacity-[0.18] dark:opacity-60" filter={`url(#${uid}-soft)`} />
+            <path d={paths.outer} transform={`translate(0 ${(g.side + g.d * 0.07).toFixed(1)})`} fill="black" fillOpacity="0.25" />
             <path d={`${paths.outer}${paths.inner}`} fillRule="evenodd" transform={`translate(0 ${g.side.toFixed(1)})`} style={{ fill: "var(--belt-side)" }} />
             <path d={`${paths.outer}${paths.inner}`} fillRule="evenodd" style={{ fill: "var(--belt)" }} />
-            <path ref={seamRef} fill="none" stroke="#000000" strokeOpacity={0.12} strokeWidth={Math.max(0.6, g.d * 0.008)} strokeLinecap="round" />
-            <path ref={glintRef} fill="none" stroke="#ebdca9" strokeOpacity={0.08} strokeWidth={Math.max(0.6, g.d * 0.006)} strokeLinecap="round" />
-            <path d={paths.outer} fill="none" style={{ stroke: "var(--rail)" }} strokeWidth={Math.max(2.8, g.d * 0.028)} filter={`url(#${uid}-gold-glow)`} />
-            <path d={paths.outer} fill="none" stroke="#fff" strokeOpacity={0.35} strokeWidth={Math.max(0.8, g.d * 0.008)} transform="translate(0 -0.8)" />
-            <path d={paths.inner} fill="none" style={{ stroke: "var(--rail)" }} strokeWidth={Math.max(2, g.d * 0.02)} />
-            <path d={paths.inner} fill="none" stroke="#ebdca9" strokeOpacity={0.3} strokeWidth={Math.max(0.8, g.d * 0.008)} transform="translate(0 -0.7)" />
+            {/* Outer Gilded Rails - GPU-accelerated double stroke (no expensive SVG filters) */}
+            <path d={paths.outer} fill="none" stroke="#cab67f" strokeOpacity={0.35} strokeWidth={Math.max(4, g.d * 0.04)} />
+            <path d={paths.outer} fill="none" stroke="#cab67f" strokeWidth={Math.max(2.2, g.d * 0.022)} />
+            <path d={paths.outer} fill="none" stroke="#fff" strokeOpacity={0.4} strokeWidth={Math.max(0.8, g.d * 0.008)} transform="translate(0 -0.8)" />
+            {/* Inner Gilded Rails */}
+            <path d={paths.inner} fill="none" stroke="#cab67f" strokeOpacity={0.3} strokeWidth={Math.max(3, g.d * 0.03)} />
+            <path d={paths.inner} fill="none" stroke="#cab67f" strokeWidth={Math.max(1.8, g.d * 0.018)} />
+            <path d={paths.inner} fill="none" stroke="#ebdca9" strokeOpacity={0.35} strokeWidth={Math.max(0.8, g.d * 0.008)} transform="translate(0 -0.7)" />
             <path d={paths.island} style={{ fill: "var(--island-wall)" }} />
             <path d={paths.island} transform={`translate(0 ${(-g.side * 0.6).toFixed(1)})`} style={{ fill: `url(#${uid}-island)` }} />
             <path d={paths.island} transform={`translate(0 ${(-g.side * 0.6 - 0.6).toFixed(1)})`} fill="none" stroke="#cab67f" strokeOpacity={0.55} strokeWidth={Math.max(1, g.d * 0.01)} />
@@ -852,13 +843,13 @@ export function SushiConveyorMenu({
             aria-describedby={`${uid}-caption`}
             aria-haspopup="dialog"
             aria-current={isActive || undefined}
-            className="absolute left-0 top-0 cursor-pointer rounded-[50%] outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
-            style={{ width: g.d, height: g.d * TILT, visibility: lifted === i ? "hidden" : undefined }}
+            className="absolute left-0 top-0 cursor-pointer rounded-[50%] outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring will-change-transform transform-gpu select-none"
+            style={{ width: g.d, height: g.d * TILT, visibility: lifted === i ? "hidden" : undefined, contain: "layout paint style" }}
             onFocus={() => { if (pointer.current.id < 0) { stop(); setActive(i); } }}
             onClick={(event) => { const pending = pendingOpen.current; pendingOpen.current = -1; if (event.detail === 0 || pending === i) open(i); }}
           >
             <span aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-50 dark:opacity-90">
-              <span ref={(node) => { shadows.current[i] = node; }} className="absolute inset-x-[5%] bottom-[-9%] top-[16%] rounded-[50%] bg-black" style={{ filter: `blur(${Math.max(2, g.d * 0.045).toFixed(1)}px)` }} />
+              <span ref={(node) => { shadows.current[i] = node; }} className="absolute inset-x-[5%] bottom-[-9%] top-[16%] rounded-[50%] bg-black/60 blur-md will-change-transform" />
             </span>
             <span ref={(node) => { lifts.current[i] = node; }} data-lift className="absolute inset-0">
               <span aria-hidden="true" data-placeholder className={`absolute rounded-[50%] border border-border bg-card ${broken ? "inset-[3%] shadow-sm" : "inset-[6%]"}`}>

@@ -38,12 +38,21 @@ export default function GrandBuffetTable({
     angle: 0,
     velocity: 0.0035, // default gentle cruise speed
     isDragging: false,
-    startX: 0,
-    lastX: 0,
-    lastTime: 0,
     isHovered: false,
     hoveredIndex: null as number | null,
     activeModalIndex: null as number | null,
+  });
+
+  // Pointer tracker specifically engineered to distinguish clean clicks from drags on PC & Mobile
+  const pointerTracker = React.useRef({
+    isDown: false,
+    isDragging: false,
+    startX: 0,
+    startY: 0,
+    lastX: 0,
+    lastTime: 0,
+    pointerId: -1,
+    plateIndex: null as number | null,
   });
 
   const [mounted, setMounted] = React.useState(false);
@@ -65,7 +74,7 @@ export default function GrandBuffetTable({
       const container = orbitRef.current;
 
       if (container && plateRefs.current.length === items.length) {
-        // Only advance angle if not dragging and not hovered and no modal open
+        // Only advance angle if not dragging, not hovered on PC, and no modal open
         if (!anim.isDragging) {
           if (!anim.isHovered && anim.activeModalIndex === null) {
             anim.angle += anim.velocity;
@@ -101,7 +110,7 @@ export default function GrandBuffetTable({
             closestToFrontIdx = i;
           }
 
-          // Scale: tuned on mobile (0.78 to 0.98) to prevent dish collisions
+          // Scale: tuned on mobile (0.78 to 0.98) and desktop (0.76 to 1.14)
           const isHovered = anim.hoveredIndex === i;
           const scaleMultiplier = isMobile ? 0.20 : 0.38;
           const baseScale = isMobile ? (0.78 + depth * scaleMultiplier) : (0.76 + depth * scaleMultiplier);
@@ -129,40 +138,78 @@ export default function GrandBuffetTable({
     return () => cancelAnimationFrame(rafId);
   }, [items]);
 
-  // Pointer / Drag interactions for table rotation
-  const handlePointerDown = (e: React.PointerEvent) => {
-    const anim = animRef.current;
-    anim.isDragging = true;
-    anim.startX = e.clientX;
-    anim.lastX = e.clientX;
-    anim.lastTime = performance.now();
-    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+  // Pointer interactions specifically designed for PC Mouse + Mobile Touch
+  const handlePointerDown = (e: React.PointerEvent, plateIndex?: number) => {
+    // Only respond to primary click (left mouse button or single touch)
+    if (e.button !== 0) return;
+    const p = pointerTracker.current;
+    p.isDown = true;
+    p.isDragging = false;
+    p.startX = e.clientX;
+    p.startY = e.clientY;
+    p.lastX = e.clientX;
+    p.lastTime = performance.now();
+    p.pointerId = e.pointerId;
+    p.plateIndex = plateIndex !== undefined ? plateIndex : null;
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
-    const anim = animRef.current;
-    if (!anim.isDragging) return;
+    const p = pointerTracker.current;
+    if (!p.isDown || p.pointerId !== e.pointerId) return;
 
-    const dx = e.clientX - anim.lastX;
-    const now = performance.now();
+    const dx = e.clientX - p.lastX;
+    const totalDist = Math.hypot(e.clientX - p.startX, e.clientY - p.startY);
 
-    // Update angle based on drag delta
-    anim.angle += (dx / 350);
-    anim.lastX = e.clientX;
-    anim.lastTime = now;
+    // Only initiate table drag if moved more than 6 pixels (prevents hijacking clicks on PC)
+    if (!p.isDragging && totalDist > 6) {
+      p.isDragging = true;
+      animRef.current.isDragging = true;
+      try {
+        if (containerRef.current) {
+          containerRef.current.setPointerCapture(e.pointerId);
+        }
+      } catch {}
+    }
+
+    if (p.isDragging) {
+      animRef.current.angle += dx / 350;
+      p.lastX = e.clientX;
+      p.lastTime = performance.now();
+    }
   };
 
-  const handlePointerUp = () => {
-    const anim = animRef.current;
-    anim.isDragging = false;
+  const handlePointerUp = (e: React.PointerEvent) => {
+    const p = pointerTracker.current;
+    if (p.pointerId !== e.pointerId) return;
+
+    const wasDragging = p.isDragging;
+    const targetIdx = p.plateIndex;
+
+    try {
+      if (containerRef.current && containerRef.current.hasPointerCapture(e.pointerId)) {
+        containerRef.current.releasePointerCapture(e.pointerId);
+      }
+    } catch {}
+
+    p.isDown = false;
+    p.isDragging = false;
+    p.pointerId = -1;
+    p.plateIndex = null;
+    animRef.current.isDragging = false;
+
+    // Clean click on PC or Tap on Mobile (no drag occurred)
+    if (!wasDragging && targetIdx !== null && items[targetIdx]) {
+      openPlateModal(items[targetIdx], targetIdx);
+    }
   };
 
   // Open plate modal and initiate FLIP animation
-  const openPlateModal = (dish: BuffetDish, index: number) => {
+  const openPlateModal = React.useCallback((dish: BuffetDish, index: number) => {
+    if (animRef.current.activeModalIndex !== null) return; // Prevent double trigger
     animRef.current.activeModalIndex = index;
     setOpenIndex(index);
     setModalDish(dish);
-  };
+  }, []);
 
   const handleDialogClose = React.useCallback(() => {
     animRef.current.activeModalIndex = null;
@@ -201,8 +248,8 @@ export default function GrandBuffetTable({
       {/* The Grand Royal Banquet Table (Continuous Velvet Surface) */}
       <div
         ref={containerRef}
-        className="relative mx-auto w-full max-w-5xl aspect-[4/3] sm:aspect-[16/9] min-h-[290px] sm:min-h-[460px] max-h-[580px] p-2 sm:p-6 flex items-center justify-center select-none touch-none"
-        onPointerDown={handlePointerDown}
+        className="relative mx-auto w-full max-w-5xl aspect-[4/3] sm:aspect-[16/9] min-h-[290px] sm:min-h-[460px] max-h-[580px] p-2 sm:p-6 flex items-center justify-center select-none cursor-grab active:cursor-grabbing"
+        onPointerDown={(e) => handlePointerDown(e)}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
@@ -264,7 +311,7 @@ export default function GrandBuffetTable({
             </div>
           </div>
 
-          {/* ORBITING PLATES (أطباق تدور فوق صحون تقديم مذهبة مع ظلال حقيقية) */}
+          {/* ORBITING PLATES (أطباق تدور فوق صحون تقديم مذهبة مع إمكانية النقر في كل الشاشات) */}
           <div ref={orbitRef} className="absolute inset-0 pointer-events-none">
             {items.map((dish, i) => (
               <div
@@ -275,7 +322,8 @@ export default function GrandBuffetTable({
                 role="button"
                 tabIndex={0}
                 aria-label={`Voir les détails de ${dish.name}`}
-                className="absolute pointer-events-auto cursor-pointer will-change-transform transform-gpu select-none transition-shadow duration-300 w-[21%] sm:w-[25%] max-w-[85px] sm:max-w-[185px] aspect-square"
+                title={`Cliquer pour voir ${dish.name}`}
+                className="group absolute pointer-events-auto cursor-pointer will-change-transform transform-gpu select-none transition-shadow duration-300 w-[21%] sm:w-[25%] max-w-[85px] sm:max-w-[185px] aspect-square"
                 style={{
                   transformOrigin: "center center",
                   visibility: liftedIndex === i ? "hidden" : "visible",
@@ -289,7 +337,13 @@ export default function GrandBuffetTable({
                   animRef.current.isHovered = false;
                   animRef.current.hoveredIndex = null;
                 }}
-                onClick={() => openPlateModal(dish, i)}
+                onPointerDown={(e) => {
+                  handlePointerDown(e, i);
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openPlateModal(dish, i);
+                }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
@@ -305,7 +359,7 @@ export default function GrandBuffetTable({
 
                 {/* Charger Plate / Sous-plat d'orfèvrerie */}
                 <div
-                  className="pointer-events-none absolute -inset-[5%] rounded-full p-[3px] shadow-2xl transition-transform duration-300"
+                  className="pointer-events-none absolute -inset-[5%] rounded-full p-[3px] shadow-2xl transition-transform duration-300 group-hover:scale-105"
                   style={{
                     background: "radial-gradient(circle at 45% 35%, #ebdca9 0%, #cab67f 40%, #876d33 75%, #4f3b15 100%)",
                     boxShadow: "0 14px 30px rgba(0, 0, 0, 0.8), inset 0 2px 4px rgba(255, 255, 255, 0.6), inset 0 -2px 4px rgba(0, 0, 0, 0.7)",
@@ -319,14 +373,16 @@ export default function GrandBuffetTable({
                   src={dish.image}
                   alt={dish.name}
                   draggable={false}
-                  className="relative z-10 size-full object-contain drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)] select-none"
+                  className="pointer-events-none relative z-10 size-full object-contain drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)] select-none transition-transform duration-300 group-hover:scale-105"
                 />
 
-                {/* Floating Plate Name Chip on Hover (Desktop) */}
+                {/* Floating Plate Name & Action Chip on Hover (Desktop PC) */}
                 <div
-                  className="pointer-events-none absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-gold-500/40 bg-[#220010]/95 px-3 py-1 text-[10px] font-medium text-amber-100 shadow-xl opacity-0 transition-opacity duration-300 sm:block hidden"
+                  className="pointer-events-none absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-gold-500/50 bg-[#220010]/95 px-3 py-1 text-[11px] font-medium text-amber-100 shadow-2xl opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:-translate-y-1 sm:flex items-center gap-1.5 hidden z-30 backdrop-blur-md"
                 >
+                  <span className="size-1.5 rounded-full bg-gold-400" />
                   <span>{dish.name}</span>
+                  <span className="text-[10px] text-gold-300 font-semibold">· Cliquer pour zoomer</span>
                 </div>
               </div>
             ))}
@@ -334,22 +390,33 @@ export default function GrandBuffetTable({
         </div>
       </div>
 
-      {/* Bottom Ambient Caption & Action - OUTSIDE the table container so plates NEVER collide */}
+      {/* Bottom Ambient Caption & Action - Fully clickable to open dish modal */}
       <div className="mt-6 sm:mt-10 flex flex-col items-center gap-4 text-center px-4">
         {activeDish && (
-          <div className="inline-flex items-center gap-2 rounded-full border border-gold-500/30 bg-[#250012]/95 px-4 py-1.5 backdrop-blur-md shadow-lg max-w-[92vw] overflow-hidden">
-            <span className="size-1.5 shrink-0 rounded-full bg-gold-400" />
+          <button
+            type="button"
+            onClick={() => {
+              const idx = items.findIndex((d) => d.id === activeDish.id);
+              if (idx !== -1) openPlateModal(activeDish, idx);
+            }}
+            title="Cliquer pour voir les détails et déguster"
+            className="cursor-pointer inline-flex items-center gap-2 rounded-full border border-gold-500/40 bg-[#250012]/95 px-5 py-2 backdrop-blur-md shadow-lg max-w-[92vw] overflow-hidden transition-all hover:scale-105 hover:border-gold-300 hover:shadow-gold-500/20 active:scale-95 group"
+          >
+            <span className="size-2 shrink-0 rounded-full bg-gold-400 group-hover:scale-125 transition-transform" />
             <span className="font-serif text-xs sm:text-sm font-medium text-amber-100 truncate">
               {activeDish.name}
             </span>
             <span className="text-xs text-gold-400 font-semibold shrink-0">· {activeDish.price}</span>
-          </div>
+            <span className="text-[11px] text-gold-300/80 font-medium ml-1 underline underline-offset-2 decoration-gold-500/50 group-hover:text-gold-200">
+              (Détails)
+            </span>
+          </button>
         )}
 
         {action && <div className="mt-1 w-full sm:w-auto flex justify-center">{action}</div>}
       </div>
 
-      {/* LUXURY FLIP DETAIL MODAL DIALOG */}
+      {/* LUXURY FLIP DETAIL MODAL DIALOG (Works seamlessly on PC & Mobile) */}
       {modalDish && mounted && (
         <GrandBuffetDialog
           dish={modalDish}
@@ -633,7 +700,7 @@ function GrandBuffetDialog({
               <button
                 type="button"
                 onClick={dismiss}
-                className="sm:hidden inline-flex items-center justify-center rounded-full border border-[#cab67f]/30 bg-[#350018]/80 px-4 py-2.5 text-sm font-medium text-amber-200 transition-colors hover:bg-[#cab67f]/20"
+                className="inline-flex items-center justify-center rounded-full border border-[#cab67f]/30 bg-[#350018]/80 px-5 py-2.5 text-sm font-medium text-amber-200 transition-all hover:bg-[#cab67f]/20 hover:text-white active:scale-95"
               >
                 Fermer
               </button>

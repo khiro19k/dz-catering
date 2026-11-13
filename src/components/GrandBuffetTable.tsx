@@ -282,9 +282,9 @@ export default function GrandBuffetTable({
             }}
           />
 
-          {/* ROYAL CENTERPIECE (سنتربيس ملكي في قلب المائدة) */}
+          {/* ROYAL CENTERPIECE (ديكور مائدة ملكي فاخر في قلب المائدة بدلاً من اسم الشركة) */}
           <div
-            className="relative z-10 w-[29%] sm:w-[38%] h-[27%] sm:h-[36%] rounded-[50%] flex items-center justify-center p-2 sm:p-3 text-center pointer-events-none"
+            className="relative z-10 w-[30%] sm:w-[38%] h-[28%] sm:h-[36%] rounded-[50%] flex items-center justify-center p-1 sm:p-2 text-center pointer-events-none"
             style={{
               background: "radial-gradient(ellipse at 50% 40%, #3e0420 0%, #20000e 65%, #120008 100%)",
               border: "2px solid rgba(202, 182, 127, 0.65)",
@@ -295,20 +295,15 @@ export default function GrandBuffetTable({
             <div className="absolute inset-1.5 sm:inset-2 rounded-[50%] border border-[#cab67f]/30 bg-gradient-to-tr from-[#1f000e] via-[#480827]/70 to-[#1b000c] opacity-95" />
 
             {/* Candlelight Ambience Glow */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(235,220,169,0.3),transparent_70%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(235,220,169,0.35),transparent_70%)]" />
 
-            {/* Floral / Crest Center Visual */}
-            <div className="relative z-10 flex flex-col items-center justify-center">
-              <div className="mb-0.5 sm:mb-1 flex size-7 sm:size-11 items-center justify-center rounded-full border border-gold-400/50 bg-[#350018]/90 shadow-md">
-                <UtensilsCrossed className="size-3.5 sm:size-5 text-gold-300" />
-              </div>
-              <span className="font-serif text-[9px] sm:text-xs font-semibold tracking-[0.22em] sm:tracking-[0.26em] text-amber-100 uppercase">
-                DZ CATERING
-              </span>
-              <span className="text-[7px] sm:text-[9px] tracking-widest text-gold-400/80 uppercase mt-0.5 hidden xs:block">
-                Scénographie
-              </span>
-            </div>
+            {/* Haute Décoration Florale & Orfèvrerie Royale (ديكور ملكي فاخر: باقة زهور بيضاء، كريستال، وشموع مضيئة) */}
+            <img
+              src="/images/centerpiece-royal-plateau.png"
+              alt="Décoration Florale Royale & Candélabre d'Apparat"
+              draggable={false}
+              className="relative z-10 w-[118%] max-w-none h-auto object-contain drop-shadow-[0_14px_28px_rgba(0,0,0,0.95)] select-none pointer-events-none -translate-y-[6%]"
+            />
           </div>
 
           {/* ORBITING PLATES (أطباق تدور فوق صحون تقديم مذهبة مع إمكانية النقر في كل الشاشات) */}

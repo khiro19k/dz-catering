@@ -260,210 +260,29 @@ export default function GrandBuffetTable({
           className="pointer-events-none absolute -top-28 left-1/2 -translate-x-1/2 w-80 sm:w-[32rem] h-64 bg-gold-400/15 rounded-full blur-[90px]"
         />
 
-        {/* Outer Banquet Table Shadow & Edge */}
+        {/* The 4K Photorealistic Royal Banquet Table Frame */}
         <div
-          className="relative w-full h-full rounded-[50%] flex items-center justify-center transition-all duration-300"
-          style={{
-            background: "radial-gradient(ellipse 75% 60% at 50% 45%, #3d081e 0%, #240011 48%, #140009 85%, #0d0006 100%)",
-            boxShadow: "inset 0 0 60px rgba(0, 0, 0, 0.85), inset 0 2px 4px rgba(235, 220, 169, 0.4), 0 35px 80px rgba(0, 0, 0, 0.95)",
-            border: "4px solid #cab67f",
-          }}
+          className="relative w-full h-full rounded-[2rem] sm:rounded-[2.8rem] overflow-hidden flex items-center justify-center border border-[#cab67f]/45 shadow-[0_35px_100px_rgba(0,0,0,0.98)] transition-all duration-300"
         >
-          {/* Ornate Table Rim Details */}
-          <div className="pointer-events-none absolute inset-[3px] rounded-[50%] border border-[#ebdca9]/50" />
-          <div className="pointer-events-none absolute inset-[7px] rounded-[50%] border border-[#876d33]/60" />
-          <div className="pointer-events-none absolute inset-[12px] rounded-[50%] border border-[#2b0013]/90" />
-
-          {/* Tablecloth Velvet Weave Soft Lighting Accent */}
-          <div
-            className="pointer-events-none absolute inset-0 rounded-[50%] opacity-40 mix-blend-soft-light"
-            style={{
-              background: "radial-gradient(ellipse at 50% 50%, rgba(202, 182, 127, 0.3) 0%, transparent 65%)",
-            }}
+          {/* Authentic 4K Photorealistic Table Background Image (مائدة قصر حقيقية بدون أي فيكتور) */}
+          <img
+            src="/images/royal-buffet-table-photo1.jpg"
+            alt="Maison DZ CATERING · Table Royale d'Apparat"
+            draggable={false}
+            className="absolute inset-0 size-full object-cover select-none pointer-events-none"
           />
 
-          {/* DECORATION LAYER: DAMASK JACQUARD TEXTURE (دمج الخيار 4: ملمس مخمل دمشقي مذهب) */}
+          {/* Ambient Lighting Vignette blending with the burgundy background */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-[12px] rounded-[50%] opacity-45 mix-blend-soft-light"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 50% 50%, rgba(202, 182, 127, 0.25) 1.5px, transparent 1.5px), radial-gradient(circle at 0 0, rgba(235, 220, 169, 0.15) 1px, transparent 1px)",
-              backgroundSize: "28px 28px",
-            }}
+            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0e0006]/75 via-transparent to-[#0e0006]/35"
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_40%,transparent_50%,rgba(14,0,6,0.6)_100%)]"
           />
 
-          {/* DECORATION LAYER: GOLD FILIGREE EMBROIDERY RING (تطريز ذهبي على حاشية المائدة) */}
-          <svg
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-[14px] size-[calc(100%-28px)] rounded-[50%]"
-            viewBox="0 0 100 100"
-            preserveAspectRatio="none"
-          >
-            <ellipse
-              cx="50"
-              cy="50"
-              rx="47"
-              ry="47"
-              fill="none"
-              stroke="rgba(202, 182, 127, 0.45)"
-              strokeWidth="0.6"
-              strokeDasharray="2, 1.5"
-            />
-            <ellipse
-              cx="50"
-              cy="50"
-              rx="45.5"
-              ry="45.5"
-              fill="none"
-              stroke="rgba(235, 220, 169, 0.25)"
-              strokeWidth="0.3"
-            />
-          </svg>
-
-          {/* DECORATION LAYER: GOLDEN LAUREL BRANCHES (أغصان غار كلاسيكية مذهبة حول مدار المائدة) */}
-          <svg
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 size-full text-[#ebdca9]/30 drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]"
-            viewBox="0 0 800 500"
-            fill="currentColor"
-          >
-            <path d="M330 85 C340 75, 360 80, 355 95 C350 85, 335 90, 330 85 Z" />
-            <path d="M470 85 C460 75, 440 80, 445 95 C450 85, 465 90, 470 85 Z" />
-            <path d="M140 210 C135 200, 150 190, 160 205 C150 202, 142 215, 140 210 Z" />
-            <path d="M145 310 C135 315, 148 330, 162 318 C152 318, 146 308, 145 310 Z" />
-            <path d="M660 210 C665 200, 650 190, 640 205 C650 202, 658 215, 660 210 Z" />
-            <path d="M655 310 C665 315, 652 330, 638 318 C648 318, 654 308, 655 310 Z" />
-          </svg>
-
-          {/* DECORATION LAYER: CRISTALLERIE D'APPARAT (دمج الخيار 2: كؤوس كريستال Baccarat وقوارير فاخرة في الخلفية) */}
-          {/* Left Crystal Set */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute top-[13%] left-[19%] sm:left-[22%] flex items-end gap-1 sm:gap-2 transform -rotate-12 opacity-85 drop-shadow-[0_8px_16px_rgba(0,0,0,0.85)] z-0"
-          >
-            <svg
-              className="w-5 sm:w-8 h-8 sm:h-12 text-[#ebdca9]/85 filter drop-shadow(0 0 6px rgba(235,220,169,0.4))"
-              viewBox="0 0 24 36"
-              fill="currentColor"
-            >
-              <defs>
-                <linearGradient id="crystalDecanter" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#ffffff" stopOpacity="0.9" />
-                  <stop offset="40%" stopColor="#ebdca9" stopOpacity="0.7" />
-                  <stop offset="100%" stopColor="#cab67f" stopOpacity="0.4" />
-                </linearGradient>
-              </defs>
-              <path
-                d="M12 2L10 8H14L12 2ZM8 10L6 20C6 24 9 28 12 28C15 28 18 24 18 20L16 10H8ZM11 28V33H7V35H17V33H13V28C13 28 11 28 11 28Z"
-                fill="url(#crystalDecanter)"
-              />
-            </svg>
-            <svg
-              className="w-3.5 sm:w-5 h-6 sm:h-9 text-[#cab67f]/80"
-              viewBox="0 0 20 32"
-              fill="currentColor"
-            >
-              <path
-                d="M4 2C4 10 7 14 9 16V28H6V30H14V28H11V16C13 14 16 10 16 2H4Z"
-                fill="white"
-                fillOpacity="0.8"
-              />
-            </svg>
-          </div>
-
-          {/* Right Crystal Set */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute top-[13%] right-[19%] sm:right-[22%] flex items-end gap-1 sm:gap-2 transform rotate-12 opacity-85 drop-shadow-[0_8px_16px_rgba(0,0,0,0.85)] z-0"
-          >
-            <svg
-              className="w-3.5 sm:w-5 h-6 sm:h-9 text-[#cab67f]/80"
-              viewBox="0 0 20 32"
-              fill="currentColor"
-            >
-              <path
-                d="M4 2C4 10 7 14 9 16V28H6V30H14V28H11V16C13 14 16 10 16 2H4Z"
-                fill="white"
-                fillOpacity="0.8"
-              />
-            </svg>
-            <svg
-              className="w-5 sm:w-8 h-8 sm:h-12 text-[#ebdca9]/85 filter drop-shadow(0 0 6px rgba(235,220,169,0.4))"
-              viewBox="0 0 24 36"
-              fill="currentColor"
-            >
-              <path
-                d="M12 2L10 8H14L12 2ZM8 10L6 20C6 24 9 28 12 28C15 28 18 24 18 20L16 10H8ZM11 28V33H7V35H17V33H13V28C13 28 11 28 11 28Z"
-                fill="url(#crystalDecanter)"
-              />
-            </svg>
-          </div>
-
-          {/* DECORATION LAYER: PERIMETER WARM CRYSTAL PHOTOPHORES (دمج الخيار 2: شموع كريستالية دافئة مضيئة على الأطراف) */}
-          {/* Left Photophore */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute top-[48%] left-[3%] sm:left-[5%] -translate-y-1/2 flex flex-col items-center z-0 animate-pulse"
-            style={{ animationDuration: "3.2s" }}
-          >
-            <div className="size-2 sm:size-2.5 rounded-full bg-amber-200 blur-[2px] shadow-[0_0_12px_#ffea9f]" />
-            <div
-              className="w-5 sm:w-7 h-6 sm:h-8 rounded-lg border border-[#ebdca9]/50 shadow-[0_4px_16px_rgba(0,0,0,0.85)] flex items-center justify-center p-0.5 mt-0.5"
-              style={{
-                background: "linear-gradient(to bottom, rgba(235, 220, 169, 0.4) 0%, rgba(46, 0, 21, 0.9) 100%)",
-                boxShadow: "0 0 15px rgba(235, 220, 169, 0.4), inset 0 1px 3px rgba(255, 255, 255, 0.7)",
-              }}
-            >
-              <div className="size-1.5 sm:size-2 rounded-full bg-amber-100 shadow-[0_0_6px_#ffd700]" />
-            </div>
-            <div className="w-12 sm:w-16 h-4 bg-amber-400/15 rounded-[50%] blur-md -mt-2" />
-          </div>
-
-          {/* Right Photophore */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute top-[48%] right-[3%] sm:right-[5%] -translate-y-1/2 flex flex-col items-center z-0 animate-pulse"
-            style={{ animationDuration: "2.8s" }}
-          >
-            <div className="size-2 sm:size-2.5 rounded-full bg-amber-200 blur-[2px] shadow-[0_0_12px_#ffea9f]" />
-            <div
-              className="w-5 sm:w-7 h-6 sm:h-8 rounded-lg border border-[#ebdca9]/50 shadow-[0_4px_16px_rgba(0,0,0,0.85)] flex items-center justify-center p-0.5 mt-0.5"
-              style={{
-                background: "linear-gradient(to bottom, rgba(235, 220, 169, 0.4) 0%, rgba(46, 0, 21, 0.9) 100%)",
-                boxShadow: "0 0 15px rgba(235, 220, 169, 0.4), inset 0 1px 3px rgba(255, 255, 255, 0.7)",
-              }}
-            >
-              <div className="size-1.5 sm:size-2 rounded-full bg-amber-100 shadow-[0_0_6px_#ffd700]" />
-            </div>
-            <div className="w-12 sm:w-16 h-4 bg-amber-400/15 rounded-[50%] blur-md -mt-2" />
-          </div>
-
-          {/* ROYAL CENTERPIECE (ديكور مائدة ملكي فاخر في قلب المائدة بدلاً من اسم الشركة) */}
-          <div
-            className="relative z-10 w-[30%] sm:w-[38%] h-[28%] sm:h-[36%] rounded-[50%] flex items-center justify-center p-1 sm:p-2 text-center pointer-events-none"
-            style={{
-              background: "radial-gradient(ellipse at 50% 40%, #3e0420 0%, #20000e 65%, #120008 100%)",
-              border: "2px solid rgba(202, 182, 127, 0.65)",
-              boxShadow: "0 15px 45px rgba(0, 0, 0, 0.9), inset 0 2px 5px rgba(235, 220, 169, 0.3)",
-            }}
-          >
-            {/* Mirror Inlay Effect */}
-            <div className="absolute inset-1.5 sm:inset-2 rounded-[50%] border border-[#cab67f]/30 bg-gradient-to-tr from-[#1f000e] via-[#480827]/70 to-[#1b000c] opacity-95" />
-
-            {/* Candlelight Ambience Glow */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(235,220,169,0.35),transparent_70%)]" />
-
-            {/* Haute Décoration Florale & Orfèvrerie Royale (ديكور ملكي فاخر: باقة زهور بيضاء، كريستال، وشموع مضيئة) */}
-            <img
-              src="/images/centerpiece-royal-plateau.png"
-              alt="Décoration Florale Royale & Candélabre d'Apparat"
-              draggable={false}
-              className="relative z-10 w-[118%] max-w-none h-auto object-contain drop-shadow-[0_14px_28px_rgba(0,0,0,0.95)] select-none pointer-events-none -translate-y-[6%]"
-            />
-          </div>
-
-          {/* ORBITING PLATES (أطباق تدور فوق صحون تقديم مذهبة مع إمكانية النقر في كل الشاشات) */}
+          {/* ORBITING PLATES (أطباق تدور فوق المائدة الملكية الواقعية مع إمكانية النقر في كل الشاشات) */}
           <div ref={orbitRef} className="absolute inset-0 pointer-events-none">
             {items.map((dish, i) => (
               <div

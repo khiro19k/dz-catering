@@ -52,18 +52,19 @@ export default function GrandBuffetTable({
   const [liftedIndex, setLiftedIndex] = React.useState<number | null>(null);
   const [isPaused, setIsPaused] = React.useState(false);
 
-  // Responsive width detection
-  const [isMobile, setIsMobile] = React.useState(false);
+  // Responsive width detection (mobile, tablet, desktop)
+  const [screenWidth, setScreenWidth] = React.useState(1024);
 
   React.useEffect(() => {
     setMounted(true);
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 640);
-    };
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    const handleResize = () => setScreenWidth(window.innerWidth);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  const isMobile = screenWidth < 640;
+  const isTablet = screenWidth >= 640 && screenWidth < 1024;
 
   // Navigation handlers
   const nextDish = React.useCallback(() => {
@@ -87,25 +88,30 @@ export default function GrandBuffetTable({
     return () => clearInterval(interval);
   }, [isPaused, modalDish, nextDish]);
 
-  // Pointer drag & swipe tracking
+  // Pointer drag & touch swipe tracking
+  const hasMovedRef = React.useRef(false);
   const dragTracker = React.useRef({
     isDown: false,
     startX: 0,
-    hasMoved: false,
+    startY: 0,
   });
 
   const handlePointerDown = (e: React.PointerEvent) => {
     if (e.button !== 0) return;
     dragTracker.current.isDown = true;
     dragTracker.current.startX = e.clientX;
-    dragTracker.current.hasMoved = false;
+    dragTracker.current.startY = e.clientY;
+    hasMovedRef.current = false;
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
     if (!dragTracker.current.isDown) return;
     const dx = e.clientX - dragTracker.current.startX;
-    if (Math.abs(dx) > 45) {
-      dragTracker.current.hasMoved = true;
+    if (Math.abs(dx) > 8) {
+      hasMovedRef.current = true;
+    }
+    const swipeThreshold = isMobile ? 35 : 45;
+    if (Math.abs(dx) > swipeThreshold) {
       if (dx < 0) {
         nextDish();
       } else {
@@ -117,6 +123,9 @@ export default function GrandBuffetTable({
 
   const handlePointerUp = () => {
     dragTracker.current.isDown = false;
+    setTimeout(() => {
+      hasMovedRef.current = false;
+    }, 120);
   };
 
   // Keyboard navigation
@@ -190,24 +199,27 @@ export default function GrandBuffetTable({
 
         {/* The Banquet Counter Frame */}
         <div
-          className="relative w-full rounded-[2rem] sm:rounded-[2.8rem] border border-[#cab67f]/45 bg-[#140008] p-3 sm:p-6 pb-6 sm:pb-8 shadow-[0_35px_100px_rgba(0,0,0,0.98)] overflow-hidden"
+          className="relative w-full rounded-[1.8rem] sm:rounded-[2.8rem] border border-[#cab67f]/45 bg-[#120008] p-2.5 sm:p-6 pb-5 sm:pb-8 shadow-[0_35px_100px_rgba(0,0,0,0.98)] overflow-hidden"
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerUp}
         >
-          {/* Authentic 4K Photorealistic Top-Down Royal Table Background */}
+          {/* Authentic 4K Palace Mahogany & Velvet Runner Banquet Table Background (Option 3) */}
           <img
-            src="/images/royal-table-topdown-real.jpg"
+            src="/images/table-bg-mahogany-palace.jpg"
             alt="Table Royale de Banquet DZ CATERING"
             draggable={false}
             className="absolute inset-0 size-full object-cover select-none pointer-events-none"
+            style={{
+              objectPosition: isMobile ? "center 48%" : "center 43%",
+            }}
           />
 
           {/* Ambient Lighting Vignette blending with the burgundy background */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0e0006]/80 via-transparent to-[#0e0006]/40"
+            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0e0006]/75 via-transparent to-[#0e0006]/35"
           />
           <div
             aria-hidden="true"
@@ -234,18 +246,31 @@ export default function GrandBuffetTable({
               const absOffset = Math.abs(offset);
               const isCenter = offset === 0;
 
-              // Responsive horizontal spacing
-              const spacing = isMobile ? 105 : 210;
+              // Responsive horizontal spacing tailored for mobile, tablet, and desktop
+              const spacing = isMobile
+                ? (screenWidth < 380 ? 100 : 110)
+                : isTablet
+                ? 175
+                : 215;
               const x = offset * spacing;
 
               // Realistic scale & depth hierarchy
-              const baseScale = isCenter ? (isMobile ? 1.15 : 1.28) : (isMobile ? 0.78 : 0.85);
-              const scale = isCenter ? baseScale : Math.max(0.55, baseScale - (absOffset - 1) * 0.15);
+              const baseScale = isCenter
+                ? (isMobile ? 1.18 : isTablet ? 1.22 : 1.28)
+                : (isMobile ? 0.78 : isTablet ? 0.82 : 0.85);
 
-              // Opacity
-              const opacity = isCenter ? 1 : absOffset === 1 ? 0.82 : 0.35;
+              const scale = isCenter
+                ? baseScale
+                : Math.max(0.52, baseScale - (absOffset - 1) * (isMobile ? 0.22 : 0.16));
 
-              // Z-Index
+              // Opacity: center 100%, adjacent 82-85%, outer 32-42%
+              const opacity = isCenter
+                ? 1
+                : absOffset === 1
+                ? (isMobile ? 0.82 : 0.85)
+                : (isMobile ? 0.32 : 0.42);
+
+              // Z-Index: center is always on top
               const zIndex = isCenter ? 50 : 40 - absOffset * 10;
 
               // Y lift: center dish is pulled slightly forward onto the spotlight
@@ -262,6 +287,7 @@ export default function GrandBuffetTable({
                   aria-label={`Sélectionner ${dish.name}`}
                   onClick={(e) => {
                     e.stopPropagation();
+                    if (hasMovedRef.current) return;
                     if (isCenter) {
                       openPlateModal(dish, i);
                     } else {
@@ -275,7 +301,7 @@ export default function GrandBuffetTable({
                       else goToDish(i);
                     }
                   }}
-                  className="group absolute cursor-pointer will-change-transform transform-gpu select-none transition-all duration-500 ease-out w-[125px] sm:w-[190px] aspect-square flex items-center justify-center"
+                  className="group absolute cursor-pointer will-change-transform transform-gpu select-none transition-all duration-500 ease-out w-[125px] sm:w-[170px] lg:w-[190px] aspect-square flex items-center justify-center"
                   style={{
                     transform: `translate3d(${x}px, ${liftY}px, 0) scale(${scale})`,
                     zIndex,
@@ -314,8 +340,6 @@ export default function GrandBuffetTable({
                     draggable={false}
                     className="pointer-events-none relative z-10 size-full object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.7)] select-none transition-transform duration-300 group-hover:scale-105"
                   />
-
-
                 </div>
               );
             })}
@@ -324,18 +348,24 @@ export default function GrandBuffetTable({
           {/* Navigation Arrows */}
           <button
             type="button"
-            onClick={prevDish}
+            onClick={(e) => {
+              e.stopPropagation();
+              prevDish();
+            }}
             aria-label="Plat précédent"
-            className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-40 flex size-9 sm:size-11 items-center justify-center rounded-full border border-[#cab67f]/40 bg-[#220010]/85 text-[#ebdca9] shadow-xl backdrop-blur-md transition-all hover:bg-[#cab67f] hover:text-[#20000e] active:scale-90"
+            className="absolute left-1.5 sm:left-4 top-1/2 -translate-y-1/2 z-40 flex size-8 sm:size-11 items-center justify-center rounded-full border border-[#cab67f]/40 bg-[#220010]/85 text-[#ebdca9] shadow-xl backdrop-blur-md transition-all hover:bg-[#cab67f] hover:text-[#20000e] active:scale-90"
           >
             <ChevronLeft className="size-4 sm:size-5" />
           </button>
 
           <button
             type="button"
-            onClick={nextDish}
+            onClick={(e) => {
+              e.stopPropagation();
+              nextDish();
+            }}
             aria-label="Plat suivant"
-            className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-40 flex size-9 sm:size-11 items-center justify-center rounded-full border border-[#cab67f]/40 bg-[#220010]/85 text-[#ebdca9] shadow-xl backdrop-blur-md transition-all hover:bg-[#cab67f] hover:text-[#20000e] active:scale-90"
+            className="absolute right-1.5 sm:right-4 top-1/2 -translate-y-1/2 z-40 flex size-8 sm:size-11 items-center justify-center rounded-full border border-[#cab67f]/40 bg-[#220010]/85 text-[#ebdca9] shadow-xl backdrop-blur-md transition-all hover:bg-[#cab67f] hover:text-[#20000e] active:scale-90"
           >
             <ChevronRight className="size-4 sm:size-5" />
           </button>

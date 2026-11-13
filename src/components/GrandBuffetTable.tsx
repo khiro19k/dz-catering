@@ -171,14 +171,14 @@ export default function GrandBuffetTable({
   return (
     <div className="relative w-full">
       {/* Section Header */}
-      <div className="mb-6 sm:mb-8 text-center px-4">
+      <div className="mb-4 sm:mb-8 text-center px-4">
         {eyebrow && (
           <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-gold-400 mb-2">
             {eyebrow}
           </p>
         )}
         {heading && (
-          <h2 className="mx-auto max-w-3xl font-serif text-2xl font-light tracking-tight text-white sm:text-3xl lg:text-4xl leading-snug">
+          <h2 className="mx-auto max-w-3xl font-serif text-xl sm:text-3xl lg:text-4xl font-light tracking-tight text-white leading-snug">
             {heading}
           </h2>
         )}
@@ -205,14 +205,14 @@ export default function GrandBuffetTable({
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerUp}
         >
-          {/* Authentic 4K Palace Mahogany & Velvet Runner Banquet Table Background (Option 3) */}
+          {/* Authentic 4K Palace Mahogany & Velvet Runner Banquet Table Background (Option 3 Flat-lay) */}
           <img
             src="/images/table-bg-mahogany-palace.jpg"
             alt="Table Royale de Banquet DZ CATERING"
             draggable={false}
             className="absolute inset-0 size-full object-cover select-none pointer-events-none"
             style={{
-              objectPosition: isMobile ? "center 48%" : "center 43%",
+              objectPosition: "center 50%",
             }}
           />
 
@@ -236,7 +236,7 @@ export default function GrandBuffetTable({
           <div className="pointer-events-none absolute inset-x-8 top-2.5 h-[1.5px] bg-gradient-to-r from-transparent via-[#cab67f]/60 to-transparent" />
 
           {/* DISHES CAROUSEL STAGE */}
-          <div className="relative w-full h-[230px] sm:h-[310px] flex items-center justify-center overflow-hidden touch-pan-y cursor-grab active:cursor-grabbing">
+          <div className="relative w-full h-[220px] sm:h-[310px] flex items-center justify-center overflow-hidden touch-pan-y cursor-grab active:cursor-grabbing">
             {items.map((dish, i) => {
               const count = items.length;
               let offset = i - activeIndex;
@@ -248,27 +248,27 @@ export default function GrandBuffetTable({
 
               // Responsive horizontal spacing tailored for mobile, tablet, and desktop
               const spacing = isMobile
-                ? (screenWidth < 380 ? 100 : 110)
+                ? (screenWidth < 380 ? 112 : 124)
                 : isTablet
                 ? 175
                 : 215;
               const x = offset * spacing;
 
-              // Realistic scale & depth hierarchy
+              // Realistic scale & depth hierarchy - hero dish stands out clearly on mobile
               const baseScale = isCenter
-                ? (isMobile ? 1.18 : isTablet ? 1.22 : 1.28)
-                : (isMobile ? 0.78 : isTablet ? 0.82 : 0.85);
+                ? (isMobile ? 1.12 : isTablet ? 1.22 : 1.28)
+                : (isMobile ? 0.72 : isTablet ? 0.82 : 0.85);
 
               const scale = isCenter
                 ? baseScale
-                : Math.max(0.52, baseScale - (absOffset - 1) * (isMobile ? 0.22 : 0.16));
+                : Math.max(0.48, baseScale - (absOffset - 1) * (isMobile ? 0.24 : 0.16));
 
-              // Opacity: center 100%, adjacent 82-85%, outer 32-42%
+              // Opacity: center 100%, preview wings on mobile 65% so center plate shines
               const opacity = isCenter
                 ? 1
                 : absOffset === 1
-                ? (isMobile ? 0.82 : 0.85)
-                : (isMobile ? 0.32 : 0.42);
+                ? (isMobile ? 0.65 : 0.85)
+                : (isMobile ? 0.18 : 0.42);
 
               // Z-Index: center is always on top
               const zIndex = isCenter ? 50 : 40 - absOffset * 10;
@@ -345,7 +345,7 @@ export default function GrandBuffetTable({
             })}
           </div>
 
-          {/* Navigation Arrows */}
+          {/* Desktop Navigation Arrows (Hidden on mobile to never obstruct the food) */}
           <button
             type="button"
             onClick={(e) => {
@@ -353,9 +353,9 @@ export default function GrandBuffetTable({
               prevDish();
             }}
             aria-label="Plat précédent"
-            className="absolute left-1.5 sm:left-4 top-1/2 -translate-y-1/2 z-40 flex size-8 sm:size-11 items-center justify-center rounded-full border border-[#cab67f]/40 bg-[#220010]/85 text-[#ebdca9] shadow-xl backdrop-blur-md transition-all hover:bg-[#cab67f] hover:text-[#20000e] active:scale-90"
+            className="hidden sm:flex absolute left-4 top-1/2 -translate-y-1/2 z-40 size-11 items-center justify-center rounded-full border border-[#cab67f]/40 bg-[#220010]/85 text-[#ebdca9] shadow-xl backdrop-blur-md transition-all hover:bg-[#cab67f] hover:text-[#20000e] active:scale-90"
           >
-            <ChevronLeft className="size-4 sm:size-5" />
+            <ChevronLeft className="size-5" />
           </button>
 
           <button
@@ -365,9 +365,9 @@ export default function GrandBuffetTable({
               nextDish();
             }}
             aria-label="Plat suivant"
-            className="absolute right-1.5 sm:right-4 top-1/2 -translate-y-1/2 z-40 flex size-8 sm:size-11 items-center justify-center rounded-full border border-[#cab67f]/40 bg-[#220010]/85 text-[#ebdca9] shadow-xl backdrop-blur-md transition-all hover:bg-[#cab67f] hover:text-[#20000e] active:scale-90"
+            className="hidden sm:flex absolute right-4 top-1/2 -translate-y-1/2 z-40 size-11 items-center justify-center rounded-full border border-[#cab67f]/40 bg-[#220010]/85 text-[#ebdca9] shadow-xl backdrop-blur-md transition-all hover:bg-[#cab67f] hover:text-[#20000e] active:scale-90"
           >
-            <ChevronRight className="size-4 sm:size-5" />
+            <ChevronRight className="size-5" />
           </button>
         </div>
 
@@ -395,21 +395,41 @@ export default function GrandBuffetTable({
             {activeItem.description}
           </p>
 
-          {/* Interactive Navigation Dots */}
-          <div className="flex items-center gap-2 mt-1">
-            {items.map((dish, idx) => (
-              <button
-                key={dish.id}
-                type="button"
-                onClick={() => goToDish(idx)}
-                aria-label={`Afficher ${dish.name}`}
-                className={`h-1.5 rounded-full transition-all duration-300 ${
-                  idx === activeIndex
-                    ? "w-8 bg-gradient-to-r from-[#ebdca9] via-[#cab67f] to-[#b39855] shadow-[0_0_8px_rgba(235,220,169,0.7)]"
-                    : "w-2 bg-[#cab67f]/30 hover:bg-[#cab67f]/60"
-                }`}
-              />
-            ))}
+          {/* Interactive Navigation Dots & Mobile Controls */}
+          <div className="flex items-center justify-center gap-3 mt-1.5">
+            <button
+              type="button"
+              onClick={prevDish}
+              aria-label="Plat précédent"
+              className="flex sm:hidden size-8 items-center justify-center rounded-full border border-gold-400/35 bg-[#250012]/90 text-gold-300 shadow-md backdrop-blur-md transition-all active:scale-90"
+            >
+              <ChevronLeft className="size-4" />
+            </button>
+
+            <div className="flex items-center gap-2">
+              {items.map((dish, idx) => (
+                <button
+                  key={dish.id}
+                  type="button"
+                  onClick={() => goToDish(idx)}
+                  aria-label={`Afficher ${dish.name}`}
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                    idx === activeIndex
+                      ? "w-8 bg-gradient-to-r from-[#ebdca9] via-[#cab67f] to-[#b39855] shadow-[0_0_8px_rgba(235,220,169,0.7)]"
+                      : "w-2 bg-[#cab67f]/30 hover:bg-[#cab67f]/60"
+                  }`}
+                />
+              ))}
+            </div>
+
+            <button
+              type="button"
+              onClick={nextDish}
+              aria-label="Plat suivant"
+              className="flex sm:hidden size-8 items-center justify-center rounded-full border border-gold-400/35 bg-[#250012]/90 text-gold-300 shadow-md backdrop-blur-md transition-all active:scale-90"
+            >
+              <ChevronRight className="size-4" />
+            </button>
           </div>
 
           {/* CTA Buttons */}

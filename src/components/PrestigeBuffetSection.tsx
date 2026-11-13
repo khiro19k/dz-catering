@@ -2,10 +2,9 @@
 
 import * as React from "react";
 import { Sparkles, UtensilsCrossed, CheckCircle2 } from "lucide-react";
-import SushiConveyorMenu from "@/components/ui/sushi-conveyor-menu";
-import type { ConveyorDish } from "@/components/ui/sushi-conveyor-menu";
+import GrandBuffetTable, { type BuffetDish } from "@/components/GrandBuffetTable";
 
-export const PRESTIGE_BUFFET_DISHES: ConveyorDish[] = [
+export const PRESTIGE_BUFFET_DISHES: BuffetDish[] = [
   {
     id: "patisseries-orientales",
     name: "Pâtisseries Orientales Prestigieuses",
@@ -94,7 +93,7 @@ export default function PrestigeBuffetSection() {
   const [selectedItems, setSelectedItems] = React.useState<string[]>([]);
   const [justAdded, setJustAdded] = React.useState<string | null>(null);
 
-  const handleAddDish = (dish: ConveyorDish) => {
+  const handleAddDish = (dish: BuffetDish) => {
     setSelectedCount((prev) => prev + 1);
     setSelectedItems((prev) => (prev.includes(dish.name) ? prev : [...prev, dish.name]));
     setJustAdded(dish.name);
@@ -151,16 +150,13 @@ export default function PrestigeBuffetSection() {
           </p>
         </div>
 
-        {/* 3D Buffet Conveyor Table */}
+        {/* 3D Royal Banquet Table */}
         <div className="relative rounded-[2.5rem] border border-gold-500/25 bg-[#20000e] p-4 shadow-[0_30px_90px_rgba(0,0,0,0.8)] sm:p-8">
-          <SushiConveyorMenu
+          <GrandBuffetTable
             items={PRESTIGE_BUFFET_DISHES}
             eyebrow="DZ CATERING · HAUTE GASTRONOMIE"
             heading="Vous pouvez demander une dégustation de nos meilleurs plats"
-            autoplay={true}
-            speed={22}
-            interval={5000}
-            onAdd={handleAddDish}
+            onAddDish={handleAddDish}
             action={
               <a
                 href="#contact"

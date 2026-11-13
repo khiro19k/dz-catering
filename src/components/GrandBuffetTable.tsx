@@ -2,7 +2,14 @@
 
 import * as React from "react";
 import { createPortal } from "react-dom";
-import { Sparkles, Check, X, UtensilsCrossed } from "lucide-react";
+import {
+  Sparkles,
+  Check,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  UtensilsCrossed,
+} from "lucide-react";
 
 export interface BuffetDish {
   id: string;
@@ -22,6 +29,12 @@ interface GrandBuffetTableProps {
   action?: React.ReactNode;
 }
 
+/**
+ * GrandBuffetTable - Option 2: Le Grand Buffet Linéaire d'Apparat
+ * A realistic, luxurious 5-star hotel banquet buffet counter.
+ * Dishes are arranged physically along the velvet countertop with realistic
+ * perspective depth, center spotlight, and signature FLIP zoom-in animation.
+ */
 export default function GrandBuffetTable({
   items,
   eyebrow = "DZ CATERING · HAUTE GASTRONOMIE",
@@ -30,209 +43,126 @@ export default function GrandBuffetTable({
   action,
 }: GrandBuffetTableProps) {
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const orbitRef = React.useRef<HTMLDivElement>(null);
   const plateRefs = React.useRef<(HTMLDivElement | null)[]>([]);
 
-  // Animation state (kept in refs to avoid React state re-rendering lag during 60/120fps loop)
-  const animRef = React.useRef({
-    angle: 0,
-    velocity: 0.0035, // default gentle cruise speed
-    isDragging: false,
-    isHovered: false,
-    hoveredIndex: null as number | null,
-    activeModalIndex: null as number | null,
-  });
-
-  // Pointer tracker specifically engineered to distinguish clean clicks from drags on PC & Mobile
-  const pointerTracker = React.useRef({
-    isDown: false,
-    isDragging: false,
-    startX: 0,
-    startY: 0,
-    lastX: 0,
-    lastTime: 0,
-    pointerId: -1,
-    plateIndex: null as number | null,
-  });
-
   const [mounted, setMounted] = React.useState(false);
-  const [activeDish, setActiveDish] = React.useState<BuffetDish | null>(null);
+  const [activeIndex, setActiveIndex] = React.useState(0);
   const [modalDish, setModalDish] = React.useState<BuffetDish | null>(null);
   const [openIndex, setOpenIndex] = React.useState<number | null>(null);
   const [liftedIndex, setLiftedIndex] = React.useState<number | null>(null);
+  const [isPaused, setIsPaused] = React.useState(false);
+
+  // Responsive width detection
+  const [isMobile, setIsMobile] = React.useState(false);
 
   React.useEffect(() => {
     setMounted(true);
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // 60/120 FPS requestAnimationFrame Loop with 3D depth perspective
+  // Navigation handlers
+  const nextDish = React.useCallback(() => {
+    setActiveIndex((prev) => (prev + 1) % items.length);
+  }, [items.length]);
+
+  const prevDish = React.useCallback(() => {
+    setActiveIndex((prev) => (prev - 1 + items.length) % items.length);
+  }, [items.length]);
+
+  const goToDish = React.useCallback((idx: number) => {
+    setActiveIndex(idx);
+  }, []);
+
+  // Auto-cruise interval (subtle, pauses on hover or when modal is open)
   React.useEffect(() => {
-    let rafId: number;
+    if (isPaused || modalDish !== null) return;
+    const interval = setInterval(() => {
+      nextDish();
+    }, 5500);
+    return () => clearInterval(interval);
+  }, [isPaused, modalDish, nextDish]);
 
-    const tick = () => {
-      const anim = animRef.current;
-      const container = orbitRef.current;
+  // Pointer drag & swipe tracking
+  const dragTracker = React.useRef({
+    isDown: false,
+    startX: 0,
+    hasMoved: false,
+  });
 
-      if (container && plateRefs.current.length === items.length) {
-        // Only advance angle if not dragging, not hovered on PC, and no modal open
-        if (!anim.isDragging) {
-          if (!anim.isHovered && anim.activeModalIndex === null) {
-            anim.angle += anim.velocity;
-          }
-        }
-
-        const rect = container.getBoundingClientRect();
-        const isMobile = rect.width < 600;
-        // Radii for oval table surface with mobile breathing room
-        const rx = rect.width * (isMobile ? 0.35 : 0.38);
-        const ry = rect.height * (isMobile ? 0.31 : 0.36);
-        const cx = rect.width / 2;
-        const cy = rect.height / 2;
-
-        let closestToFrontIdx = 0;
-        let maxDepth = -Infinity;
-
-        items.forEach((dish, i) => {
-          const plate = plateRefs.current[i];
-          if (!plate) return;
-
-          const dishAngle = anim.angle + (i * (Math.PI * 2 / items.length));
-          const cos = Math.cos(dishAngle);
-          const sin = Math.sin(dishAngle);
-
-          const x = cx + cos * rx;
-          const y = cy + sin * ry;
-
-          // Depth: 0 (furthest back) to 1 (closest front)
-          const depth = (sin + 1) / 2;
-          if (depth > maxDepth) {
-            maxDepth = depth;
-            closestToFrontIdx = i;
-          }
-
-          // Scale: tuned on mobile (0.78 to 0.98) and desktop (0.76 to 1.14)
-          const isHovered = anim.hoveredIndex === i;
-          const scaleMultiplier = isMobile ? 0.20 : 0.38;
-          const baseScale = isMobile ? (0.78 + depth * scaleMultiplier) : (0.76 + depth * scaleMultiplier);
-          const scale = isHovered ? baseScale * 1.08 : baseScale;
-          const zIndex = isHovered ? 500 : Math.round(depth * 100);
-          const opacity = 0.72 + (depth * 0.28);
-          const liftY = isHovered ? (isMobile ? -6 : -12) : 0;
-
-          const nodeWidth = plate.offsetWidth || (isMobile ? 75 : 110);
-          plate.style.transform = `translate3d(${x - nodeWidth / 2}px, ${y - nodeWidth / 2 + liftY}px, 0) scale(${scale})`;
-          plate.style.zIndex = String(zIndex);
-          plate.style.opacity = String(opacity);
-        });
-
-        // Set active dish in caption if not hovered
-        if (anim.hoveredIndex === null && items[closestToFrontIdx]) {
-          setActiveDish((prev) => (prev?.id === items[closestToFrontIdx].id ? prev : items[closestToFrontIdx]));
-        }
-      }
-
-      rafId = requestAnimationFrame(tick);
-    };
-
-    rafId = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafId);
-  }, [items]);
-
-  // Pointer interactions specifically designed for PC Mouse + Mobile Touch
-  const handlePointerDown = (e: React.PointerEvent, plateIndex?: number) => {
-    // Only respond to primary click (left mouse button or single touch)
+  const handlePointerDown = (e: React.PointerEvent) => {
     if (e.button !== 0) return;
-    const p = pointerTracker.current;
-    p.isDown = true;
-    p.isDragging = false;
-    p.startX = e.clientX;
-    p.startY = e.clientY;
-    p.lastX = e.clientX;
-    p.lastTime = performance.now();
-    p.pointerId = e.pointerId;
-    p.plateIndex = plateIndex !== undefined ? plateIndex : null;
+    dragTracker.current.isDown = true;
+    dragTracker.current.startX = e.clientX;
+    dragTracker.current.hasMoved = false;
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
-    const p = pointerTracker.current;
-    if (!p.isDown || p.pointerId !== e.pointerId) return;
-
-    const dx = e.clientX - p.lastX;
-    const totalDist = Math.hypot(e.clientX - p.startX, e.clientY - p.startY);
-
-    // Only initiate table drag if moved more than 6 pixels (prevents hijacking clicks on PC)
-    if (!p.isDragging && totalDist > 6) {
-      p.isDragging = true;
-      animRef.current.isDragging = true;
-      try {
-        if (containerRef.current) {
-          containerRef.current.setPointerCapture(e.pointerId);
-        }
-      } catch {}
-    }
-
-    if (p.isDragging) {
-      animRef.current.angle += dx / 350;
-      p.lastX = e.clientX;
-      p.lastTime = performance.now();
-    }
-  };
-
-  const handlePointerUp = (e: React.PointerEvent) => {
-    const p = pointerTracker.current;
-    if (p.pointerId !== e.pointerId) return;
-
-    const wasDragging = p.isDragging;
-    const targetIdx = p.plateIndex;
-
-    try {
-      if (containerRef.current && containerRef.current.hasPointerCapture(e.pointerId)) {
-        containerRef.current.releasePointerCapture(e.pointerId);
+    if (!dragTracker.current.isDown) return;
+    const dx = e.clientX - dragTracker.current.startX;
+    if (Math.abs(dx) > 45) {
+      dragTracker.current.hasMoved = true;
+      if (dx < 0) {
+        nextDish();
+      } else {
+        prevDish();
       }
-    } catch {}
-
-    p.isDown = false;
-    p.isDragging = false;
-    p.pointerId = -1;
-    p.plateIndex = null;
-    animRef.current.isDragging = false;
-
-    // Clean click on PC or Tap on Mobile (no drag occurred)
-    if (!wasDragging && targetIdx !== null && items[targetIdx]) {
-      openPlateModal(items[targetIdx], targetIdx);
+      dragTracker.current.startX = e.clientX;
     }
   };
 
-  // Open plate modal and initiate FLIP animation
+  const handlePointerUp = () => {
+    dragTracker.current.isDown = false;
+  };
+
+  // Keyboard navigation
+  React.useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (modalDish !== null) return;
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        prevDish();
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        nextDish();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [modalDish, nextDish, prevDish]);
+
+  // Open modal with signature FLIP animation
   const openPlateModal = React.useCallback((dish: BuffetDish, index: number) => {
-    if (animRef.current.activeModalIndex !== null) return; // Prevent double trigger
-    animRef.current.activeModalIndex = index;
     setOpenIndex(index);
     setModalDish(dish);
   }, []);
 
   const handleDialogClose = React.useCallback(() => {
-    animRef.current.activeModalIndex = null;
     setModalDish(null);
     setOpenIndex(null);
     setLiftedIndex(null);
   }, []);
 
   const handleDialogLift = React.useCallback((isLifted: boolean) => {
-    setLiftedIndex(isLifted ? animRef.current.activeModalIndex : null);
-  }, []);
+    setLiftedIndex(isLifted ? openIndex : null);
+  }, [openIndex]);
 
   const getSourceRect = React.useCallback(() => {
-    const idx = animRef.current.activeModalIndex;
-    if (idx === null) return null;
-    const node = plateRefs.current[idx];
+    if (openIndex === null) return null;
+    const node = plateRefs.current[openIndex];
     return node ? node.getBoundingClientRect() : null;
-  }, []);
+  }, [openIndex]);
+
+  const activeItem = items[activeIndex] || items[0];
 
   return (
     <div className="relative w-full">
       {/* Section Header */}
-      <div className="mb-8 text-center px-4">
+      <div className="mb-6 sm:mb-8 text-center px-4">
         {eyebrow && (
           <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-gold-400 mb-2">
             {eyebrow}
@@ -245,149 +175,291 @@ export default function GrandBuffetTable({
         )}
       </div>
 
-      {/* The Grand Royal Banquet Table (Continuous Velvet Surface) */}
+      {/* GRAND BUFFET LINÉAIRE - THE REALISTIC ROYAL BUFFET TABLE */}
       <div
         ref={containerRef}
-        className="relative mx-auto w-full max-w-5xl aspect-[4/3] sm:aspect-[16/9] min-h-[290px] sm:min-h-[460px] max-h-[580px] p-2 sm:p-6 flex items-center justify-center select-none cursor-grab active:cursor-grabbing"
-        onPointerDown={(e) => handlePointerDown(e)}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
+        className="relative mx-auto w-full max-w-5xl select-none"
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
       >
-        {/* Ambient Top Chandelier Lighting */}
+        {/* Top Chandelier Warm Downlight */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -top-28 left-1/2 -translate-x-1/2 w-80 sm:w-[32rem] h-64 bg-gold-400/15 rounded-full blur-[90px]"
+          className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-96 sm:w-[40rem] h-56 bg-gold-400/15 rounded-full blur-[90px]"
         />
 
-        {/* The 4K Photorealistic Royal Banquet Table Frame */}
+        {/* The Banquet Counter Frame */}
         <div
-          className="relative w-full h-full rounded-[2rem] sm:rounded-[2.8rem] overflow-hidden flex items-center justify-center border border-[#cab67f]/45 shadow-[0_35px_100px_rgba(0,0,0,0.98)] transition-all duration-300"
+          className="relative w-full rounded-[2rem] sm:rounded-[2.8rem] border border-[#cab67f]/35 bg-gradient-to-b from-[#2b0014] via-[#1a000c] to-[#100007] p-3 sm:p-6 pb-6 sm:pb-8 shadow-[0_30px_90px_rgba(0,0,0,0.95)] overflow-hidden"
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
         >
-          {/* Authentic 4K Photorealistic Table Background Image (مائدة قصر حقيقية بدون أي فيكتور) */}
-          <img
-            src="/images/royal-buffet-table-photo1.jpg"
-            alt="Maison DZ CATERING · Table Royale d'Apparat"
-            draggable={false}
-            className="absolute inset-0 size-full object-cover select-none pointer-events-none"
-          />
-
-          {/* Ambient Lighting Vignette blending with the burgundy background */}
+          {/* Authentic Crushed Velvet Background Texture */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0e0006]/75 via-transparent to-[#0e0006]/35"
+            className="pointer-events-none absolute inset-0 opacity-40 mix-blend-soft-light"
+            style={{
+              background:
+                "radial-gradient(ellipse 80% 60% at 50% 40%, rgba(202, 182, 127, 0.3) 0%, transparent 70%)",
+            }}
           />
+
+          {/* Damask Weave Texture */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_40%,transparent_50%,rgba(14,0,6,0.6)_100%)]"
+            className="pointer-events-none absolute inset-0 opacity-25"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle at 50% 50%, rgba(202, 182, 127, 0.3) 1px, transparent 1px)",
+              backgroundSize: "24px 24px",
+            }}
           />
 
-          {/* ORBITING PLATES (أطباق تدور فوق المائدة الملكية الواقعية مع إمكانية النقر في كل الشاشات) */}
-          <div ref={orbitRef} className="absolute inset-0 pointer-events-none">
-            {items.map((dish, i) => (
-              <div
-                key={dish.id}
-                ref={(node) => {
-                  plateRefs.current[i] = node;
-                }}
-                role="button"
-                tabIndex={0}
-                aria-label={`Voir les détails de ${dish.name}`}
-                title={`Cliquer pour voir ${dish.name}`}
-                className="group absolute pointer-events-auto cursor-pointer will-change-transform transform-gpu select-none transition-shadow duration-300 w-[21%] sm:w-[25%] max-w-[85px] sm:max-w-[185px] aspect-square"
-                style={{
-                  transformOrigin: "center center",
-                  visibility: liftedIndex === i ? "hidden" : "visible",
-                }}
-                onMouseEnter={() => {
-                  animRef.current.isHovered = true;
-                  animRef.current.hoveredIndex = i;
-                  setActiveDish(dish);
-                }}
-                onMouseLeave={() => {
-                  animRef.current.isHovered = false;
-                  animRef.current.hoveredIndex = null;
-                }}
-                onPointerDown={(e) => {
-                  handlePointerDown(e, i);
-                }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  openPlateModal(dish, i);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    openPlateModal(dish, i);
-                  }
-                }}
-              >
-                {/* Contact Ambient Occlusion Shadow */}
-                <div
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-x-2 bottom-[-10%] top-[30%] rounded-[50%] bg-black/85 blur-md"
-                />
+          {/* Left Corner Table Accent: Crystal Candle & Champagne Flutes */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute top-4 left-4 sm:left-8 flex items-end gap-1.5 opacity-75 z-10 hidden xs:flex"
+          >
+            {/* Candle photophore */}
+            <div className="flex flex-col items-center">
+              <div className="size-2 rounded-full bg-amber-200 blur-[2px] shadow-[0_0_10px_#ffea9f]" />
+              <div className="w-5 h-6 rounded-md border border-gold-400/40 bg-gradient-to-t from-[#20000e] to-transparent shadow-lg flex items-center justify-center">
+                <div className="size-1 rounded-full bg-amber-100" />
+              </div>
+            </div>
+            {/* Flute */}
+            <svg
+              className="w-3.5 h-7 text-[#cab67f]/70"
+              viewBox="0 0 20 32"
+              fill="currentColor"
+            >
+              <path
+                d="M5 2C5 9 8 13 10 15V28H7V30H13V28H10V15C12 13 15 9 15 2H5Z"
+                fill="white"
+                fillOpacity="0.8"
+              />
+            </svg>
+          </div>
 
-                {/* Charger Plate / Sous-plat d'orfèvrerie */}
+          {/* Right Corner Table Accent: Crystal Decanter & Photophore */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute top-4 right-4 sm:right-8 flex items-end gap-1.5 opacity-75 z-10 hidden xs:flex"
+          >
+            {/* Wine flute */}
+            <svg
+              className="w-3.5 h-7 text-[#cab67f]/70"
+              viewBox="0 0 20 32"
+              fill="currentColor"
+            >
+              <path
+                d="M5 2C5 9 8 13 10 15V28H7V30H13V28H10V15C12 13 15 9 15 2H5Z"
+                fill="white"
+                fillOpacity="0.8"
+              />
+            </svg>
+            {/* Candle photophore */}
+            <div className="flex flex-col items-center">
+              <div className="size-2 rounded-full bg-amber-200 blur-[2px] shadow-[0_0_10px_#ffea9f]" />
+              <div className="w-5 h-6 rounded-md border border-gold-400/40 bg-gradient-to-t from-[#20000e] to-transparent shadow-lg flex items-center justify-center">
+                <div className="size-1 rounded-full bg-amber-100" />
+              </div>
+            </div>
+          </div>
+
+          {/* Center Spotlight Pool (Illuminates the active dish on the velvet countertop) */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[45%] w-72 sm:w-96 h-40 sm:h-52 rounded-[50%] bg-[radial-gradient(ellipse_at_50%_50%,rgba(235,220,169,0.25)_0%,rgba(202,182,127,0.12)_45%,transparent_75%)] blur-lg"
+          />
+
+          {/* Gilded Bevel Trim Bar running horizontally along the table edge */}
+          <div className="pointer-events-none absolute inset-x-8 top-2.5 h-[1.5px] bg-gradient-to-r from-transparent via-[#cab67f]/60 to-transparent" />
+
+          {/* DISHES CAROUSEL STAGE */}
+          <div className="relative w-full h-[230px] sm:h-[310px] flex items-center justify-center overflow-hidden touch-pan-y cursor-grab active:cursor-grabbing">
+            {items.map((dish, i) => {
+              const count = items.length;
+              let offset = i - activeIndex;
+              if (offset > count / 2) offset -= count;
+              if (offset < -count / 2) offset += count;
+
+              const absOffset = Math.abs(offset);
+              const isCenter = offset === 0;
+
+              // Responsive horizontal spacing
+              const spacing = isMobile ? 105 : 210;
+              const x = offset * spacing;
+
+              // Realistic scale & depth hierarchy
+              const baseScale = isCenter ? (isMobile ? 1.15 : 1.28) : (isMobile ? 0.78 : 0.85);
+              const scale = isCenter ? baseScale : Math.max(0.55, baseScale - (absOffset - 1) * 0.15);
+
+              // Opacity
+              const opacity = isCenter ? 1 : absOffset === 1 ? 0.82 : 0.35;
+
+              // Z-Index
+              const zIndex = isCenter ? 50 : 40 - absOffset * 10;
+
+              // Y lift: center dish is pulled slightly forward onto the spotlight
+              const liftY = isCenter ? (isMobile ? -6 : -12) : absOffset * (isMobile ? 4 : 8);
+
+              return (
                 <div
-                  className="pointer-events-none absolute -inset-[5%] rounded-full p-[3px] shadow-2xl transition-transform duration-300 group-hover:scale-105"
+                  key={dish.id}
+                  ref={(node) => {
+                    plateRefs.current[i] = node;
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Sélectionner ${dish.name}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (isCenter) {
+                      openPlateModal(dish, i);
+                    } else {
+                      goToDish(i);
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      if (isCenter) openPlateModal(dish, i);
+                      else goToDish(i);
+                    }
+                  }}
+                  className="group absolute cursor-pointer will-change-transform transform-gpu select-none transition-all duration-500 ease-out w-[125px] sm:w-[190px] aspect-square flex items-center justify-center"
                   style={{
-                    background: "radial-gradient(circle at 45% 35%, #ebdca9 0%, #cab67f 40%, #876d33 75%, #4f3b15 100%)",
-                    boxShadow: "0 14px 30px rgba(0, 0, 0, 0.8), inset 0 2px 4px rgba(255, 255, 255, 0.6), inset 0 -2px 4px rgba(0, 0, 0, 0.7)",
+                    transform: `translate3d(${x}px, ${liftY}px, 0) scale(${scale})`,
+                    zIndex,
+                    opacity,
+                    visibility: liftedIndex === i ? "hidden" : "visible",
                   }}
                 >
-                  <div className="size-full rounded-full border border-white/40" />
-                </div>
+                  {/* Contact Ambient Occlusion Shadow */}
+                  <div
+                    aria-hidden="true"
+                    className={`pointer-events-none absolute inset-x-2 bottom-[-10%] top-[30%] rounded-[50%] bg-black/85 transition-opacity duration-300 ${
+                      isCenter ? "blur-md opacity-100" : "blur-sm opacity-60"
+                    }`}
+                  />
 
-                {/* High-Resolution Dish Image */}
-                <img
-                  src={dish.image}
-                  alt={dish.name}
-                  draggable={false}
-                  className="pointer-events-none relative z-10 size-full object-contain drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)] select-none transition-transform duration-300 group-hover:scale-105"
-                />
+                  {/* Charger Plate / Sous-plat d'orfèvrerie */}
+                  <div
+                    className={`pointer-events-none absolute -inset-[5%] rounded-full p-[3px] shadow-2xl transition-all duration-300 ${
+                      isCenter ? "group-hover:scale-105 shadow-[0_18px_35px_rgba(0,0,0,0.95)]" : "shadow-md"
+                    }`}
+                    style={{
+                      background:
+                        "radial-gradient(circle at 45% 35%, #ebdca9 0%, #cab67f 40%, #876d33 75%, #4f3b15 100%)",
+                      boxShadow: isCenter
+                        ? "0 18px 36px rgba(0, 0, 0, 0.85), inset 0 2px 5px rgba(255, 255, 255, 0.6)"
+                        : "0 8px 18px rgba(0, 0, 0, 0.7)",
+                    }}
+                  >
+                    <div className="size-full rounded-full border border-white/40" />
+                  </div>
 
-                {/* Floating Plate Name & Action Chip on Hover (Desktop PC) */}
-                <div
-                  className="pointer-events-none absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-gold-500/50 bg-[#220010]/95 px-3 py-1 text-[11px] font-medium text-amber-100 shadow-2xl opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:-translate-y-1 sm:flex items-center gap-1.5 hidden z-30 backdrop-blur-md"
-                >
-                  <span className="size-1.5 rounded-full bg-gold-400" />
-                  <span>{dish.name}</span>
-                  <span className="text-[10px] text-gold-300 font-semibold">· Cliquer pour zoomer</span>
+                  {/* High-Resolution Dish Image */}
+                  <img
+                    src={dish.image}
+                    alt={dish.name}
+                    draggable={false}
+                    className="pointer-events-none relative z-10 size-full object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.7)] select-none transition-transform duration-300 group-hover:scale-105"
+                  />
+
+                  {/* Floating Action Chip for Center Hero Plate */}
+                  {isCenter && (
+                    <div className="pointer-events-none absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-gold-400/50 bg-[#250012]/95 px-3 py-1 text-[10px] sm:text-[11px] font-medium text-amber-100 shadow-xl backdrop-blur-md flex items-center gap-1.5 animate-in fade-in duration-300">
+                      <span className="size-1.5 rounded-full bg-gold-400" />
+                      <span>Cliquer pour zoomer</span>
+                    </div>
+                  )}
                 </div>
-              </div>
+              );
+            })}
+          </div>
+
+          {/* Navigation Arrows */}
+          <button
+            type="button"
+            onClick={prevDish}
+            aria-label="Plat précédent"
+            className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-40 flex size-9 sm:size-11 items-center justify-center rounded-full border border-[#cab67f]/40 bg-[#220010]/85 text-[#ebdca9] shadow-xl backdrop-blur-md transition-all hover:bg-[#cab67f] hover:text-[#20000e] active:scale-90"
+          >
+            <ChevronLeft className="size-4 sm:size-5" />
+          </button>
+
+          <button
+            type="button"
+            onClick={nextDish}
+            aria-label="Plat suivant"
+            className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-40 flex size-9 sm:size-11 items-center justify-center rounded-full border border-[#cab67f]/40 bg-[#220010]/85 text-[#ebdca9] shadow-xl backdrop-blur-md transition-all hover:bg-[#cab67f] hover:text-[#20000e] active:scale-90"
+          >
+            <ChevronRight className="size-4 sm:size-5" />
+          </button>
+        </div>
+
+        {/* ACTIVE DISH DETAIL CARD & ACTIONS - OUTSIDE the table */}
+        <div className="mt-6 sm:mt-8 flex flex-col items-center gap-3.5 text-center px-4 max-w-2xl mx-auto">
+          {/* Formula Tier Badge */}
+          <div className="inline-flex items-center gap-2 rounded-full border border-gold-500/30 bg-[#250012]/95 px-4 py-1.5 backdrop-blur-md shadow-md">
+            <span className="size-1.5 rounded-full bg-gold-400" />
+            <span className="text-xs font-semibold uppercase tracking-wider text-gold-300">
+              {activeItem.price}
+            </span>
+            <span className="text-gold-500/60">·</span>
+            <span className="font-mono text-xs text-amber-100/70">
+              {activeIndex + 1} / {items.length}
+            </span>
+          </div>
+
+          {/* Dish Title */}
+          <h3 className="font-serif text-xl sm:text-2xl font-normal text-amber-100 tracking-tight leading-snug">
+            {activeItem.name}
+          </h3>
+
+          {/* Description */}
+          <p className="text-xs sm:text-sm text-amber-100/80 leading-relaxed max-w-xl">
+            {activeItem.description}
+          </p>
+
+          {/* Interactive Navigation Dots */}
+          <div className="flex items-center gap-2 mt-1">
+            {items.map((dish, idx) => (
+              <button
+                key={dish.id}
+                type="button"
+                onClick={() => goToDish(idx)}
+                aria-label={`Afficher ${dish.name}`}
+                className={`h-1.5 rounded-full transition-all duration-300 ${
+                  idx === activeIndex
+                    ? "w-8 bg-gradient-to-r from-[#ebdca9] via-[#cab67f] to-[#b39855] shadow-[0_0_8px_rgba(235,220,169,0.7)]"
+                    : "w-2 bg-[#cab67f]/30 hover:bg-[#cab67f]/60"
+                }`}
+              />
             ))}
+          </div>
+
+          {/* CTA Buttons */}
+          <div className="flex flex-wrap items-center justify-center gap-3 mt-2 w-full">
+            <button
+              type="button"
+              onClick={() => openPlateModal(activeItem, activeIndex)}
+              className="inline-flex items-center gap-2 rounded-full border border-gold-400/50 bg-[#300016]/90 px-5 py-2.5 text-xs sm:text-sm font-semibold text-amber-100 shadow-md backdrop-blur-md transition-all hover:bg-gold-400 hover:text-[#20000e] active:scale-95"
+            >
+              <Sparkles className="size-4 text-gold-400 group-hover:text-[#20000e]" />
+              <span>Voir les détails & Ingrédients</span>
+            </button>
+
+            {action}
           </div>
         </div>
       </div>
 
-      {/* Bottom Ambient Caption & Action - Fully clickable to open dish modal */}
-      <div className="mt-6 sm:mt-10 flex flex-col items-center gap-4 text-center px-4">
-        {activeDish && (
-          <button
-            type="button"
-            onClick={() => {
-              const idx = items.findIndex((d) => d.id === activeDish.id);
-              if (idx !== -1) openPlateModal(activeDish, idx);
-            }}
-            title="Cliquer pour voir les détails et déguster"
-            className="cursor-pointer inline-flex items-center gap-2 rounded-full border border-gold-500/40 bg-[#250012]/95 px-5 py-2 backdrop-blur-md shadow-lg max-w-[92vw] overflow-hidden transition-all hover:scale-105 hover:border-gold-300 hover:shadow-gold-500/20 active:scale-95 group"
-          >
-            <span className="size-2 shrink-0 rounded-full bg-gold-400 group-hover:scale-125 transition-transform" />
-            <span className="font-serif text-xs sm:text-sm font-medium text-amber-100 truncate">
-              {activeDish.name}
-            </span>
-            <span className="text-xs text-gold-400 font-semibold shrink-0">· {activeDish.price}</span>
-            <span className="text-[11px] text-gold-300/80 font-medium ml-1 underline underline-offset-2 decoration-gold-500/50 group-hover:text-gold-200">
-              (Détails)
-            </span>
-          </button>
-        )}
-
-        {action && <div className="mt-1 w-full sm:w-auto flex justify-center">{action}</div>}
-      </div>
-
-      {/* LUXURY FLIP DETAIL MODAL DIALOG (Works seamlessly on PC & Mobile) */}
+      {/* LUXURY FLIP DETAIL MODAL DIALOG */}
       {modalDish && mounted && (
         <GrandBuffetDialog
           dish={modalDish}
@@ -407,7 +479,7 @@ export default function GrandBuffetTable({
  * GrandBuffetDialog
  * Implements the signature FLIP morph expansion animation:
  * On mount, the dish figure animates seamlessly from the plate's physical position
- * on the revolving table into the center dialog modal with a 3D arc trajectory.
+ * on the buffet table into the center dialog modal with a 3D arc trajectory.
  * On dismiss, it reverses smoothly back onto the table surface.
  */
 function GrandBuffetDialog({
@@ -594,7 +666,8 @@ function GrandBuffetDialog({
           <div
             className="pointer-events-none absolute -inset-[4%] rounded-full p-[3px] shadow-2xl"
             style={{
-              background: "radial-gradient(circle at 45% 35%, #ebdca9 0%, #cab67f 40%, #876d33 75%, #4f3b15 100%)",
+              background:
+                "radial-gradient(circle at 45% 35%, #ebdca9 0%, #cab67f 40%, #876d33 75%, #4f3b15 100%)",
             }}
           >
             <div className="size-full rounded-full border border-white/40" />

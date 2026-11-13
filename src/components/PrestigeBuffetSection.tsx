@@ -140,18 +140,8 @@ export default function PrestigeBuffetSection() {
           </div>
         </div>
 
-        {/* Section Heading */}
-        <div className="mb-10 text-center">
-          <h2 className="font-serif text-3xl font-light tracking-tight text-white sm:text-4xl lg:text-5xl">
-            L&apos;Excellence Gastronomique en <span className="italic text-gold-400 font-serif">Mouvement</span>
-          </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-amber-100/70 sm:text-base">
-            Une sélection raffinée de créations culinaires et d&apos;artisanat gastronomique pour vos réceptions de prestige et déjeuners d&apos;affaires.
-          </p>
-        </div>
-
         {/* 3D Royal Banquet Table */}
-        <div className="relative rounded-[2.5rem] border border-gold-500/25 bg-[#20000e] p-4 shadow-[0_30px_90px_rgba(0,0,0,0.8)] sm:p-8">
+        <div className="relative rounded-[2rem] sm:rounded-[2.5rem] border border-gold-500/25 bg-[#20000e] p-3 sm:p-8 shadow-[0_30px_90px_rgba(0,0,0,0.8)]">
           <GrandBuffetTable
             items={PRESTIGE_BUFFET_DISHES}
             eyebrow="DZ CATERING · HAUTE GASTRONOMIE"

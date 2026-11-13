@@ -67,9 +67,10 @@ export default function GrandBuffetTable({
         }
 
         const rect = container.getBoundingClientRect();
-        // Radii for oval table surface
-        const rx = rect.width * 0.38;
-        const ry = rect.height * 0.36;
+        const isMobile = rect.width < 600;
+        // Radii for oval table surface with mobile breathing room
+        const rx = rect.width * (isMobile ? 0.35 : 0.38);
+        const ry = rect.height * (isMobile ? 0.31 : 0.36);
         const cx = rect.width / 2;
         const cy = rect.height / 2;
 
@@ -94,15 +95,16 @@ export default function GrandBuffetTable({
             closestToFrontIdx = i;
           }
 
-          // Scale: 0.76 in back, up to 1.15 in front
+          // Scale: tuned on mobile (0.78 to 0.98) to prevent dish collisions
           const isHovered = anim.hoveredIndex === i;
-          const baseScale = 0.76 + (depth * 0.39);
+          const scaleMultiplier = isMobile ? 0.20 : 0.38;
+          const baseScale = isMobile ? (0.78 + depth * scaleMultiplier) : (0.76 + depth * scaleMultiplier);
           const scale = isHovered ? baseScale * 1.08 : baseScale;
           const zIndex = isHovered ? 500 : Math.round(depth * 100);
           const opacity = 0.72 + (depth * 0.28);
-          const liftY = isHovered ? -12 : 0;
+          const liftY = isHovered ? (isMobile ? -6 : -12) : 0;
 
-          const nodeWidth = plate.offsetWidth || 110;
+          const nodeWidth = plate.offsetWidth || (isMobile ? 75 : 110);
           plate.style.transform = `translate3d(${x - nodeWidth / 2}px, ${y - nodeWidth / 2 + liftY}px, 0) scale(${scale})`;
           plate.style.zIndex = String(zIndex);
           plate.style.opacity = String(opacity);
@@ -188,7 +190,7 @@ export default function GrandBuffetTable({
       {/* The Grand Royal Banquet Table (Continuous Velvet Surface) */}
       <div
         ref={containerRef}
-        className="relative mx-auto w-full max-w-5xl aspect-[16/10] sm:aspect-[16/9] max-h-[580px] p-3 sm:p-6 flex items-center justify-center select-none touch-none"
+        className="relative mx-auto w-full max-w-5xl aspect-[4/3] sm:aspect-[16/9] min-h-[290px] sm:min-h-[460px] max-h-[580px] p-2 sm:p-6 flex items-center justify-center select-none touch-none"
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
@@ -224,7 +226,7 @@ export default function GrandBuffetTable({
 
           {/* ROYAL CENTERPIECE (سنتربيس ملكي في قلب المائدة) */}
           <div
-            className="relative z-10 w-[38%] h-[36%] rounded-[50%] flex items-center justify-center p-3 text-center pointer-events-none"
+            className="relative z-10 w-[29%] sm:w-[38%] h-[27%] sm:h-[36%] rounded-[50%] flex items-center justify-center p-2 sm:p-3 text-center pointer-events-none"
             style={{
               background: "radial-gradient(ellipse at 50% 40%, #3e0420 0%, #20000e 65%, #120008 100%)",
               border: "2px solid rgba(202, 182, 127, 0.65)",
@@ -232,21 +234,21 @@ export default function GrandBuffetTable({
             }}
           >
             {/* Mirror Inlay Effect */}
-            <div className="absolute inset-2 rounded-[50%] border border-[#cab67f]/30 bg-gradient-to-tr from-[#1f000e] via-[#480827]/70 to-[#1b000c] opacity-95" />
+            <div className="absolute inset-1.5 sm:inset-2 rounded-[50%] border border-[#cab67f]/30 bg-gradient-to-tr from-[#1f000e] via-[#480827]/70 to-[#1b000c] opacity-95" />
 
             {/* Candlelight Ambience Glow */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(235,220,169,0.3),transparent_70%)]" />
 
             {/* Floral / Crest Center Visual */}
             <div className="relative z-10 flex flex-col items-center justify-center">
-              <div className="mb-1 flex size-9 sm:size-11 items-center justify-center rounded-full border border-gold-400/50 bg-[#350018]/90 shadow-md">
-                <UtensilsCrossed className="size-4 sm:size-5 text-gold-300" />
+              <div className="mb-0.5 sm:mb-1 flex size-7 sm:size-11 items-center justify-center rounded-full border border-gold-400/50 bg-[#350018]/90 shadow-md">
+                <UtensilsCrossed className="size-3.5 sm:size-5 text-gold-300" />
               </div>
-              <span className="font-serif text-[10px] sm:text-xs font-semibold tracking-[0.26em] text-amber-100 uppercase">
+              <span className="font-serif text-[9px] sm:text-xs font-semibold tracking-[0.22em] sm:tracking-[0.26em] text-amber-100 uppercase">
                 DZ CATERING
               </span>
-              <span className="text-[8px] sm:text-[9px] tracking-widest text-gold-400/80 uppercase mt-0.5">
-                Scénographie d&apos;Apparat
+              <span className="text-[7px] sm:text-[9px] tracking-widest text-gold-400/80 uppercase mt-0.5 hidden xs:block">
+                Scénographie
               </span>
             </div>
           </div>
@@ -259,11 +261,8 @@ export default function GrandBuffetTable({
                 ref={(node) => {
                   plateRefs.current[i] = node;
                 }}
-                className="absolute pointer-events-auto cursor-pointer will-change-transform transform-gpu select-none transition-shadow duration-300"
+                className="absolute pointer-events-auto cursor-pointer will-change-transform transform-gpu select-none transition-shadow duration-300 w-[21%] sm:w-[25%] max-w-[85px] sm:max-w-[185px] aspect-square"
                 style={{
-                  width: "25%",
-                  maxWidth: "185px",
-                  aspectRatio: "1 / 1",
                   transformOrigin: "center center",
                 }}
                 onMouseEnter={() => {
@@ -302,7 +301,7 @@ export default function GrandBuffetTable({
                   className="relative z-10 size-full object-contain drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)] select-none"
                 />
 
-                {/* Floating Plate Name Chip on Hover */}
+                {/* Floating Plate Name Chip on Hover (Desktop) */}
                 <div
                   className="pointer-events-none absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-gold-500/40 bg-[#220010]/95 px-3 py-1 text-[10px] font-medium text-amber-100 shadow-xl opacity-0 transition-opacity duration-300 hover:opacity-100 group-hover:opacity-100 sm:block hidden"
                 >
@@ -312,21 +311,21 @@ export default function GrandBuffetTable({
             ))}
           </div>
         </div>
+      </div>
 
-        {/* Bottom Ambient Caption & Action */}
-        <div className="absolute -bottom-14 left-0 right-0 flex flex-col items-center gap-4 text-center">
-          {activeDish && (
-            <div className="inline-flex items-center gap-2 rounded-full border border-gold-500/25 bg-[#250012]/80 px-4 py-1.5 backdrop-blur-md animate-in fade-in duration-300">
-              <span className="size-1.5 rounded-full bg-gold-400" />
-              <span className="font-serif text-xs sm:text-sm font-medium text-amber-100">
-                {activeDish.name}
-              </span>
-              <span className="text-xs text-gold-400 font-semibold">· {activeDish.price}</span>
-            </div>
-          )}
+      {/* Bottom Ambient Caption & Action - OUTSIDE the table container so plates NEVER collide */}
+      <div className="mt-6 sm:mt-10 flex flex-col items-center gap-4 text-center px-4">
+        {activeDish && (
+          <div className="inline-flex items-center gap-2 rounded-full border border-gold-500/30 bg-[#250012]/95 px-4 py-1.5 backdrop-blur-md shadow-lg max-w-[92vw] overflow-hidden">
+            <span className="size-1.5 shrink-0 rounded-full bg-gold-400" />
+            <span className="font-serif text-xs sm:text-sm font-medium text-amber-100 truncate">
+              {activeDish.name}
+            </span>
+            <span className="text-xs text-gold-400 font-semibold shrink-0">· {activeDish.price}</span>
+          </div>
+        )}
 
-          {action && <div className="mt-1">{action}</div>}
-        </div>
+        {action && <div className="mt-1 w-full sm:w-auto flex justify-center">{action}</div>}
       </div>
 
       {/* LUXURY DETAIL MODAL DIALOG (when clicking on any dish) */}

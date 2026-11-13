@@ -190,89 +190,34 @@ export default function GrandBuffetTable({
 
         {/* The Banquet Counter Frame */}
         <div
-          className="relative w-full rounded-[2rem] sm:rounded-[2.8rem] border border-[#cab67f]/35 bg-gradient-to-b from-[#2b0014] via-[#1a000c] to-[#100007] p-3 sm:p-6 pb-6 sm:pb-8 shadow-[0_30px_90px_rgba(0,0,0,0.95)] overflow-hidden"
+          className="relative w-full rounded-[2rem] sm:rounded-[2.8rem] border border-[#cab67f]/45 bg-[#140008] p-3 sm:p-6 pb-6 sm:pb-8 shadow-[0_35px_100px_rgba(0,0,0,0.98)] overflow-hidden"
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerUp}
         >
-          {/* Authentic Crushed Velvet Background Texture */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 opacity-40 mix-blend-soft-light"
-            style={{
-              background:
-                "radial-gradient(ellipse 80% 60% at 50% 40%, rgba(202, 182, 127, 0.3) 0%, transparent 70%)",
-            }}
+          {/* Authentic 4K Photorealistic Top-Down Royal Table Background */}
+          <img
+            src="/images/royal-table-topdown-real.jpg"
+            alt="Table Royale de Banquet DZ CATERING"
+            draggable={false}
+            className="absolute inset-0 size-full object-cover select-none pointer-events-none"
           />
 
-          {/* Damask Weave Texture */}
+          {/* Ambient Lighting Vignette blending with the burgundy background */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 opacity-25"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 50% 50%, rgba(202, 182, 127, 0.3) 1px, transparent 1px)",
-              backgroundSize: "24px 24px",
-            }}
+            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0e0006]/80 via-transparent to-[#0e0006]/40"
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_50%,rgba(235,220,169,0.18)_0%,transparent_70%)]"
           />
 
-          {/* Left Corner Table Accent: Crystal Candle & Champagne Flutes */}
+          {/* Center Spotlight Pool (Illuminates the active dish on the real table) */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute top-4 left-4 sm:left-8 flex items-end gap-1.5 opacity-75 z-10 hidden xs:flex"
-          >
-            {/* Candle photophore */}
-            <div className="flex flex-col items-center">
-              <div className="size-2 rounded-full bg-amber-200 blur-[2px] shadow-[0_0_10px_#ffea9f]" />
-              <div className="w-5 h-6 rounded-md border border-gold-400/40 bg-gradient-to-t from-[#20000e] to-transparent shadow-lg flex items-center justify-center">
-                <div className="size-1 rounded-full bg-amber-100" />
-              </div>
-            </div>
-            {/* Flute */}
-            <svg
-              className="w-3.5 h-7 text-[#cab67f]/70"
-              viewBox="0 0 20 32"
-              fill="currentColor"
-            >
-              <path
-                d="M5 2C5 9 8 13 10 15V28H7V30H13V28H10V15C12 13 15 9 15 2H5Z"
-                fill="white"
-                fillOpacity="0.8"
-              />
-            </svg>
-          </div>
-
-          {/* Right Corner Table Accent: Crystal Decanter & Photophore */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute top-4 right-4 sm:right-8 flex items-end gap-1.5 opacity-75 z-10 hidden xs:flex"
-          >
-            {/* Wine flute */}
-            <svg
-              className="w-3.5 h-7 text-[#cab67f]/70"
-              viewBox="0 0 20 32"
-              fill="currentColor"
-            >
-              <path
-                d="M5 2C5 9 8 13 10 15V28H7V30H13V28H10V15C12 13 15 9 15 2H5Z"
-                fill="white"
-                fillOpacity="0.8"
-              />
-            </svg>
-            {/* Candle photophore */}
-            <div className="flex flex-col items-center">
-              <div className="size-2 rounded-full bg-amber-200 blur-[2px] shadow-[0_0_10px_#ffea9f]" />
-              <div className="w-5 h-6 rounded-md border border-gold-400/40 bg-gradient-to-t from-[#20000e] to-transparent shadow-lg flex items-center justify-center">
-                <div className="size-1 rounded-full bg-amber-100" />
-              </div>
-            </div>
-          </div>
-
-          {/* Center Spotlight Pool (Illuminates the active dish on the velvet countertop) */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[45%] w-72 sm:w-96 h-40 sm:h-52 rounded-[50%] bg-[radial-gradient(ellipse_at_50%_50%,rgba(235,220,169,0.25)_0%,rgba(202,182,127,0.12)_45%,transparent_75%)] blur-lg"
+            className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[45%] w-72 sm:w-96 h-40 sm:h-52 rounded-[50%] bg-[radial-gradient(ellipse_at_50%_50%,rgba(235,220,169,0.22)_0%,rgba(202,182,127,0.1)_45%,transparent_75%)] blur-lg"
           />
 
           {/* Gilded Bevel Trim Bar running horizontally along the table edge */}
@@ -370,13 +315,7 @@ export default function GrandBuffetTable({
                     className="pointer-events-none relative z-10 size-full object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.7)] select-none transition-transform duration-300 group-hover:scale-105"
                   />
 
-                  {/* Floating Action Chip for Center Hero Plate */}
-                  {isCenter && (
-                    <div className="pointer-events-none absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-gold-400/50 bg-[#250012]/95 px-3 py-1 text-[10px] sm:text-[11px] font-medium text-amber-100 shadow-xl backdrop-blur-md flex items-center gap-1.5 animate-in fade-in duration-300">
-                      <span className="size-1.5 rounded-full bg-gold-400" />
-                      <span>Cliquer pour zoomer</span>
-                    </div>
-                  )}
+
                 </div>
               );
             })}

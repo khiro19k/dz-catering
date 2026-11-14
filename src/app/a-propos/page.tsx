@@ -14,28 +14,18 @@ export default function AProposPage() {
     <div className="min-h-screen flex flex-col bg-[#63002e] text-white">
       <Navbar />
 
-      <main className="flex-1 pt-32 sm:pt-40 lg:pt-44 pb-20">
+      <main className="flex-1 pt-48 sm:pt-52 lg:pt-60 pb-20">
         {/* Header */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-16 sm:mb-20">
-          <div className="inline-block px-4 py-1 rounded-full bg-[#460021] border border-gold-500/40 text-gold-300 text-xs font-semibold uppercase tracking-[0.25em] mb-4 shadow-md">
-            HISTOIRE & VALEURS
-          </div>
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold font-serif text-white tracking-tight">
             À Propos & Engagements
           </h1>
-          <p className="mt-4 text-base sm:text-lg text-cream-100/80 max-w-3xl mx-auto font-light leading-relaxed">
-            L'alliance de la haute gastronomie et de la rigueur logistique. Une maison algérienne dédiée
-            à l'art de recevoir avec distinction, réactivité et maîtrise budgétaire.
-          </p>
         </div>
 
         {/* Corporate Presentation & Double Implantation */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20 sm:mb-28">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             <div className="lg:col-span-7 space-y-6">
-              <span className="text-xs uppercase tracking-widest text-gold-400 font-semibold block">
-                PRÉSENTATION DE L'ENTREPRISE
-              </span>
               <h2 className="text-2xl sm:text-4xl font-bold font-serif text-white leading-tight">
                 EURL DZ CATERING : Une Organisation Hôtelière au Service de Vos Réceptions
               </h2>
@@ -105,9 +95,6 @@ export default function AProposPage() {
         {/* The 4 Fundamental Pillars (from Cahier des Charges) */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20 sm:mb-28">
           <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
-            <span className="text-xs uppercase tracking-widest text-gold-400 font-semibold block mb-2">
-              GARANTIES OPÉRATIONNELLES
-            </span>
             <h2 className="text-2xl sm:text-4xl font-bold font-serif text-white">
               Nos 4 Engagements Fondamentaux
             </h2>
@@ -195,16 +182,32 @@ export default function AProposPage() {
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
               {CLIENT_REFERENCES.map((ref, idx) => (
-                <div key={idx} className="p-4 rounded-2xl bg-white/5 border border-white/10 text-center">
-                  <span className="font-serif font-bold text-sm text-gold-300 block mb-1">
-                    {ref.initials}
-                  </span>
-                  <span className="text-xs text-white block font-medium">
-                    {ref.name}
-                  </span>
-                  <span className="text-[10px] text-cream-200/50 block mt-1">
-                    {ref.category}
-                  </span>
+                <div
+                  key={idx}
+                  className="p-4 rounded-2xl bg-white/[0.98] border border-gold-400/40 hover:border-gold-400 text-center flex flex-col items-center justify-between min-h-[175px] shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
+                >
+                  <div className="h-16 w-full flex items-center justify-center">
+                    {ref.logo ? (
+                      <img
+                        src={ref.logo}
+                        alt={ref.name}
+                        className="max-h-14 max-w-[85%] object-contain group-hover:scale-105 transition-transform duration-300"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <span className="font-serif font-bold text-base text-burgundy-950">
+                        {ref.initials}
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-2 w-full">
+                    <span className="text-xs text-burgundy-950 block font-semibold leading-tight line-clamp-2">
+                      {ref.name}
+                    </span>
+                    <span className="text-[10px] text-burgundy-800/70 block mt-1 font-medium line-clamp-1">
+                      {ref.category}
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>

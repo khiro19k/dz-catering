@@ -27,9 +27,9 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-[800ms] ease-out ${
+      className={`fixed top-0 left-0 right-0 z-[80] transition-all duration-[800ms] ease-out ${
         scrolled
-          ? "bg-[#4e0024]/95 backdrop-blur-md border-b border-gold-500/30 shadow-2xl shadow-black/40 py-2 sm:py-2.5"
+          ? "bg-[#4e0024] backdrop-blur-md border-b border-gold-500/30 shadow-2xl shadow-black/50 py-2 sm:py-2.5"
           : "bg-gradient-to-b from-[#350018]/90 via-[#460020]/40 to-transparent py-3 sm:py-4"
       }`}
     >
@@ -87,7 +87,7 @@ export default function Navbar() {
                     : "translate-y-0 scale-y-100 opacity-100 drop-shadow-[0_16px_28px_rgba(0,0,0,0.65)] hover:scale-[1.02]"
                 }`}
               >
-                <div className="relative w-28 sm:w-32 lg:w-36 xl:w-40 h-[138px] sm:h-[158px] lg:h-[178px] xl:h-[198px]">
+                <div className="relative w-24 sm:w-26 lg:w-28 xl:w-32 h-[116px] sm:h-[126px] lg:h-[136px] xl:h-[155px]">
                   <Image
                     src="/images/dz-catering-shield.png"
                     alt="DZ Catering - Traiteur & Services hôteliers"
@@ -159,7 +159,7 @@ export default function Navbar() {
                     : "translate-y-0 scale-y-100 opacity-100 drop-shadow-[0_12px_20px_rgba(0,0,0,0.6)]"
                 }`}
               >
-                <div className="relative w-24 sm:w-28 h-[118px] sm:h-[138px]">
+                <div className="relative w-20 sm:w-22 h-[96px] sm:h-[106px]">
                   <Image
                     src="/images/dz-catering-shield.png"
                     alt="DZ Catering - Traiteur & Services hôteliers"

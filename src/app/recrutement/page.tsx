@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { UserCheck, CheckCircle2, ChevronRight, Briefcase, FileText, Send, PhoneCall } from "lucide-react";
+import { UserCheck, CheckCircle2, ChevronRight, Briefcase, FileText, Send, PhoneCall, UploadCloud, X } from "lucide-react";
 import { RECRUITMENT_STEPS, CONTACT_INFO } from "@/data/cateringData";
 
 export default function RecrutementPage() {
@@ -12,8 +12,23 @@ export default function RecrutementPage() {
   const [candidateEmail, setCandidateEmail] = useState("");
   const [jobRole, setJobRole] = useState("maitre-hotel");
   const [experienceYears, setExperienceYears] = useState("1-3");
+  const [cvFile, setCvFile] = useState<File | null>(null);
   const [message, setMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setCvFile(e.target.files[0]);
+    }
+  };
+
+  const handleFileDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      setCvFile(e.dataTransfer.files[0]);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,31 +40,16 @@ export default function RecrutementPage() {
     <div className="min-h-screen flex flex-col bg-[#63002e] text-white">
       <Navbar />
 
-      <main className="flex-1 pt-32 sm:pt-40 lg:pt-44 pb-20">
+      <main className="flex-1 pt-48 sm:pt-52 lg:pt-60 pb-20">
         {/* Page Header */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-16 sm:mb-20">
-          <div className="inline-block px-4 py-1 rounded-full bg-[#460021] border border-gold-500/40 text-gold-300 text-xs font-semibold uppercase tracking-[0.25em] mb-4 shadow-md">
-            CARRIÈRES & EXCELLENCE HÔTELIÈRE
-          </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-12 sm:mb-16">
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold font-serif text-white tracking-tight">
             Espace Recrutement
           </h1>
-          <p className="mt-4 text-base sm:text-lg text-cream-100/80 max-w-3xl mx-auto font-light leading-relaxed">
-            DZ CATERING recrute en continu les meilleurs talents de la gastronomie et de l'hôtellerie en Algérie :
-            Chefs, Pâtissiers et Maîtres d'hôtel animés par le sens du détail et du service irréprochable.
-          </p>
         </div>
 
         {/* 4 Steps Recruitment Process */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20 sm:mb-28">
-          <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
-            <span className="text-xs uppercase tracking-widest text-gold-400 font-semibold block mb-2">
-              MÉTHODOLOGIE DE SÉLECTION
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-bold font-serif text-white">
-              Notre Processus de Recrutement en 4 Étapes
-            </h2>
-          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {RECRUITMENT_STEPS.map((step, idx) => (
@@ -152,6 +152,12 @@ export default function RecrutementPage() {
                     transmis à notre Direction des Ressources Humaines. Nous vous contacterons au{" "}
                     <span className="font-semibold text-gold-200">{candidatePhone}</span> pour planifier votre entretien.
                   </p>
+                  {cvFile && (
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gold-500/10 border border-gold-400/40 text-gold-200 text-xs">
+                      <FileText className="w-4 h-4 text-gold-400" />
+                      <span>CV joint : <strong className="text-white">{cvFile.name}</strong> ({(cvFile.size / 1024).toFixed(0)} Ko)</span>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -229,6 +235,76 @@ export default function RecrutementPage() {
                       <option value="3-5">3 à 5 ans d'expérience</option>
                       <option value="5+">Plus de 5 ans en établissement de prestige</option>
                     </select>
+                  </div>
+
+                  {/* CV Upload Field */}
+                  <div>
+                    <label className="block text-[11px] uppercase tracking-wider font-semibold text-cream-100/80 mb-1.5 flex items-center justify-between">
+                      <span>Curriculum Vitae (CV)</span>
+                      <span className="text-[10px] text-gold-300/80 font-normal lowercase tracking-normal">
+                        PDF, DOC, DOCX (Max 10 Mo)
+                      </span>
+                    </label>
+
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept=".pdf,.doc,.docx"
+                      onChange={handleFileChange}
+                      className="hidden"
+                      id="cv-upload-input"
+                    />
+
+                    {!cvFile ? (
+                      <div
+                        onClick={() => fileInputRef.current?.click()}
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={handleFileDrop}
+                        className="group w-full p-4 sm:p-5 rounded-2xl bg-burgundy-950/60 hover:bg-burgundy-950/85 border-2 border-dashed border-gold-500/30 hover:border-gold-400/80 transition-all cursor-pointer flex flex-col items-center justify-center text-center gap-2"
+                      >
+                        <div className="w-10 h-10 rounded-full bg-gold-500/10 border border-gold-500/30 text-gold-400 flex items-center justify-center group-hover:scale-110 group-hover:border-gold-400 transition-all">
+                          <UploadCloud className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-cream-100 group-hover:text-gold-300 transition-colors">
+                            Cliquez pour importer votre CV ou glissez-déposez le fichier
+                          </p>
+                          <p className="text-[10px] text-cream-200/50 mt-0.5">
+                            Formats acceptés : PDF, Word (.docx, .doc)
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="w-full p-3.5 sm:p-4 rounded-2xl bg-[#360018] border border-gold-400/60 flex items-center justify-between gap-3 shadow-md animate-fade-in">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-9 h-9 rounded-xl bg-gold-500/20 text-gold-300 border border-gold-500/40 flex items-center justify-center shrink-0">
+                            <FileText className="w-5 h-5" />
+                          </div>
+                          <div className="min-w-0 text-left">
+                            <p className="text-xs font-bold text-cream-50 truncate">
+                              {cvFile.name}
+                            </p>
+                            <p className="text-[10px] text-gold-300/80 font-mono">
+                              {(cvFile.size / 1024).toFixed(0)} Ko • Fichier prêt à l&apos;envoi
+                            </p>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCvFile(null);
+                            if (fileInputRef.current) fileInputRef.current.value = "";
+                          }}
+                          className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-cream-200 hover:text-white transition-colors shrink-0"
+                          title="Supprimer le fichier"
+                          aria-label="Supprimer le fichier"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   <div>

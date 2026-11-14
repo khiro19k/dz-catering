@@ -14,12 +14,9 @@ export default function FormulesServicesPage() {
     <div className="min-h-screen flex flex-col bg-[#63002e] text-white">
       <Navbar />
 
-      <main className="flex-1 pt-32 sm:pt-40 lg:pt-44 pb-20">
+      <main className="flex-1 pt-48 sm:pt-52 lg:pt-60 pb-20">
         {/* Page Header */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-16 sm:mb-20">
-          <div className="inline-block px-4 py-1 rounded-full bg-[#460021] border border-gold-500/40 text-gold-300 text-xs font-semibold uppercase tracking-[0.25em] mb-4 shadow-md">
-            OFFRE GASTRONOMIQUE & LOGISTIQUE
-          </div>
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold font-serif text-white tracking-tight">
             Nos Formules & Services
           </h1>

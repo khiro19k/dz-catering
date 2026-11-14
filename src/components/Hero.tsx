@@ -218,7 +218,7 @@ export default function Hero({ settings: customSettings, media: customMedia }: H
         </div>
 
         {/* Mobile Top Clearance */}
-        <div className="w-full h-24 shrink-0 relative z-10" />
+        <div className="w-full h-32 sm:h-36 shrink-0 relative z-10" />
 
         {/* Mobile Minimalist Centerpiece */}
         <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-4 max-w-sm mx-auto my-auto">

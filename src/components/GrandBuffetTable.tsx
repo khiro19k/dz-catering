@@ -37,7 +37,7 @@ interface GrandBuffetTableProps {
  */
 export default function GrandBuffetTable({
   items,
-  eyebrow = "DZ CATERING · HAUTE GASTRONOMIE",
+  eyebrow,
   heading = "Vous pouvez demander une dégustation de nos meilleurs plats",
   onAddDish,
   action,
@@ -270,8 +270,8 @@ export default function GrandBuffetTable({
                 ? (isMobile ? 0.65 : 0.85)
                 : (isMobile ? 0.18 : 0.42);
 
-              // Z-Index: center is always on top
-              const zIndex = isCenter ? 50 : 40 - absOffset * 10;
+              // Z-Index: center is always on top (kept within local stacking range 1-25 so it never overlaps fixed headers)
+              const zIndex = isCenter ? 25 : Math.max(1, 20 - absOffset * 5);
 
               // Y lift: center dish is pulled slightly forward onto the spotlight
               const liftY = isCenter ? (isMobile ? -6 : -12) : absOffset * (isMobile ? 4 : 8);
@@ -353,7 +353,7 @@ export default function GrandBuffetTable({
               prevDish();
             }}
             aria-label="Plat précédent"
-            className="hidden sm:flex absolute left-4 top-1/2 -translate-y-1/2 z-40 size-11 items-center justify-center rounded-full border border-[#cab67f]/40 bg-[#220010]/85 text-[#ebdca9] shadow-xl backdrop-blur-md transition-all hover:bg-[#cab67f] hover:text-[#20000e] active:scale-90"
+            className="hidden sm:flex absolute left-4 top-1/2 -translate-y-1/2 z-30 size-11 items-center justify-center rounded-full border border-[#cab67f]/40 bg-[#220010]/85 text-[#ebdca9] shadow-xl backdrop-blur-md transition-all hover:bg-[#cab67f] hover:text-[#20000e] active:scale-90"
           >
             <ChevronLeft className="size-5" />
           </button>
@@ -365,7 +365,7 @@ export default function GrandBuffetTable({
               nextDish();
             }}
             aria-label="Plat suivant"
-            className="hidden sm:flex absolute right-4 top-1/2 -translate-y-1/2 z-40 size-11 items-center justify-center rounded-full border border-[#cab67f]/40 bg-[#220010]/85 text-[#ebdca9] shadow-xl backdrop-blur-md transition-all hover:bg-[#cab67f] hover:text-[#20000e] active:scale-90"
+            className="hidden sm:flex absolute right-4 top-1/2 -translate-y-1/2 z-30 size-11 items-center justify-center rounded-full border border-[#cab67f]/40 bg-[#220010]/85 text-[#ebdca9] shadow-xl backdrop-blur-md transition-all hover:bg-[#cab67f] hover:text-[#20000e] active:scale-90"
           >
             <ChevronRight className="size-5" />
           </button>
@@ -373,18 +373,6 @@ export default function GrandBuffetTable({
 
         {/* ACTIVE DISH DETAIL CARD & ACTIONS - OUTSIDE the table */}
         <div className="mt-6 sm:mt-8 flex flex-col items-center gap-3.5 text-center px-4 max-w-2xl mx-auto">
-          {/* Formula Tier Badge */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-gold-500/30 bg-[#250012]/95 px-4 py-1.5 backdrop-blur-md shadow-md">
-            <span className="size-1.5 rounded-full bg-gold-400" />
-            <span className="text-xs font-semibold uppercase tracking-wider text-gold-300">
-              {activeItem.price}
-            </span>
-            <span className="text-gold-500/60">·</span>
-            <span className="font-mono text-xs text-amber-100/70">
-              {activeIndex + 1} / {items.length}
-            </span>
-          </div>
-
           {/* Dish Title */}
           <h3 className="font-serif text-xl sm:text-2xl font-normal text-amber-100 tracking-tight leading-snug">
             {activeItem.name}
@@ -434,15 +422,6 @@ export default function GrandBuffetTable({
 
           {/* CTA Buttons */}
           <div className="flex flex-wrap items-center justify-center gap-3 mt-2 w-full">
-            <button
-              type="button"
-              onClick={() => openPlateModal(activeItem, activeIndex)}
-              className="inline-flex items-center gap-2 rounded-full border border-gold-400/50 bg-[#300016]/90 px-5 py-2.5 text-xs sm:text-sm font-semibold text-amber-100 shadow-md backdrop-blur-md transition-all hover:bg-gold-400 hover:text-[#20000e] active:scale-95"
-            >
-              <Sparkles className="size-4 text-gold-400 group-hover:text-[#20000e]" />
-              <span>Voir les détails & Ingrédients</span>
-            </button>
-
             {action}
           </div>
         </div>

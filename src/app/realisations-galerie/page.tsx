@@ -110,19 +110,12 @@ export default function RealisationsGaleriePage() {
     <div className="min-h-screen flex flex-col bg-[#63002e] text-white">
       <Navbar />
 
-      <main className="flex-1 pt-32 sm:pt-40 lg:pt-44 pb-20">
+      <main className="flex-1 pt-48 sm:pt-52 lg:pt-60 pb-20">
         {/* Page Header */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-12 sm:mb-16">
-          <div className="inline-block px-4 py-1 rounded-full bg-[#460021] border border-gold-500/40 text-gold-300 text-xs font-semibold uppercase tracking-[0.25em] mb-4 shadow-md">
-            PREUVE PAR L'IMAGE & EXPÉRIENCE TERRAIN
-          </div>
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold font-serif text-white tracking-tight">
             Réalisations & Galerie
           </h1>
-          <p className="mt-4 text-base sm:text-lg text-cream-100/80 max-w-3xl mx-auto font-light leading-relaxed">
-            Plongez au cœur de nos réceptions. Découvrez la rigueur du dressage, la fraîcheur de nos compositions
-            et le savoir-faire de notre brigade lors d'événements réels à Alger.
-          </p>
         </div>
 
         {/* Video Immersion Banner (from Cahier des Charges) */}
@@ -163,7 +156,7 @@ export default function RealisationsGaleriePage() {
                   : "bg-white/5 hover:bg-white/10 text-cream-100 border border-gold-500/20"
               }`}
             >
-              [Tous]
+              Tous
             </button>
             <button
               type="button"
@@ -174,7 +167,7 @@ export default function RealisationsGaleriePage() {
                   : "bg-white/5 hover:bg-white/10 text-cream-100 border border-gold-500/20"
               }`}
             >
-              [Pauses Café]
+              Pauses Café
             </button>
             <button
               type="button"
@@ -185,7 +178,7 @@ export default function RealisationsGaleriePage() {
                   : "bg-white/5 hover:bg-white/10 text-cream-100 border border-gold-500/20"
               }`}
             >
-              [Cocktails Prestige]
+              Cocktails Prestige
             </button>
             <button
               type="button"
@@ -196,7 +189,7 @@ export default function RealisationsGaleriePage() {
                   : "bg-white/5 hover:bg-white/10 text-cream-100 border border-gold-500/20"
               }`}
             >
-              [Déjeuners Corporate]
+              Déjeuners Corporate
             </button>
             <button
               type="button"
@@ -207,7 +200,7 @@ export default function RealisationsGaleriePage() {
                   : "bg-white/5 hover:bg-white/10 text-cream-100 border border-gold-500/20"
               }`}
             >
-              [Mise en Scène & Décors]
+              Mise en Scène & Décors
             </button>
           </div>
         </div>

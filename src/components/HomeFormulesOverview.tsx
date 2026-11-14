@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Coffee, Wine, Utensils, Sparkles } from "lucide-react";
+import { ArrowRight, Coffee, Wine, Utensils } from "lucide-react";
 import { motion, type Variants } from "framer-motion";
 
 const PRESTIGE_OFFERS = [
@@ -67,16 +67,9 @@ export default function HomeFormulesOverview() {
           transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
           className="text-center max-w-3xl mx-auto mb-14 sm:mb-20"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-[#350017] border border-gold-500/40 text-gold-300 text-xs font-semibold uppercase tracking-[0.25em] mb-4 shadow-md">
-            <Sparkles className="w-3.5 h-3.5 text-gold-400" />
-            <span>OFFRE GASTRONOMIQUE</span>
-          </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-serif text-white tracking-tight leading-tight">
             Nos Formules & Services
           </h2>
-          <p className="mt-4 text-sm sm:text-base text-cream-100/80 leading-relaxed font-light max-w-2xl mx-auto">
-            Présentation claire de nos prestations pour faciliter votre choix : pauses café, cocktails, déjeuners en box ou servis à l'assiette.
-          </p>
         </motion.div>
 
         {/* =========================================================================

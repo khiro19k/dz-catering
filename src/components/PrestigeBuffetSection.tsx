@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { Sparkles, UtensilsCrossed, CheckCircle2 } from "lucide-react";
 import GrandBuffetTable, { type BuffetDish } from "@/components/GrandBuffetTable";
 
 export const PRESTIGE_BUFFET_DISHES: BuffetDish[] = [
@@ -89,15 +88,10 @@ export const PRESTIGE_TIER_LEGEND = {
 };
 
 export default function PrestigeBuffetSection() {
-  const [selectedCount, setSelectedCount] = React.useState(0);
   const [selectedItems, setSelectedItems] = React.useState<string[]>([]);
-  const [justAdded, setJustAdded] = React.useState<string | null>(null);
 
   const handleAddDish = (dish: BuffetDish) => {
-    setSelectedCount((prev) => prev + 1);
     setSelectedItems((prev) => (prev.includes(dish.name) ? prev : [...prev, dish.name]));
-    setJustAdded(dish.name);
-    setTimeout(() => setJustAdded(null), 3000);
   };
 
   return (
@@ -113,47 +107,18 @@ export default function PrestigeBuffetSection() {
       />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Top Floating Selection Pill */}
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-          <div className="inline-flex items-center gap-2 rounded-full border border-gold-500/30 bg-[#350018]/80 px-4 py-1.5 backdrop-blur-md">
-            <span className="size-2 animate-pulse rounded-full bg-gold-400" />
-            <span className="text-xs font-semibold tracking-wider text-gold-300 uppercase">
-              Table de Dégustation Royale
-            </span>
-          </div>
-
-          {/* Interactive Selection Counter */}
-          <div className="flex items-center gap-3">
-            {justAdded && (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-950/80 px-3 py-1 text-xs text-emerald-200 shadow-md animate-in fade-in slide-in-from-right-3">
-                <CheckCircle2 className="size-3.5 text-emerald-400" />
-                <span>Ajouté : {justAdded}</span>
-              </span>
-            )}
-            <div className="inline-flex items-center gap-2 rounded-full border border-gold-500/40 bg-[#2d0014]/90 px-4 py-1.5 text-xs font-medium text-amber-100 shadow-lg">
-              <UtensilsCrossed className="size-3.5 text-gold-400" />
-              <span>Votre sélection :</span>
-              <span className="rounded-full bg-gold-500/20 px-2 py-0.5 font-bold text-gold-300">
-                {selectedCount}
-              </span>
-            </div>
-          </div>
-        </div>
-
         {/* 3D Royal Banquet Table */}
         <div className="relative rounded-[2rem] sm:rounded-[2.5rem] border border-gold-500/25 bg-[#20000e] p-3 sm:p-8 shadow-[0_30px_90px_rgba(0,0,0,0.8)]">
           <GrandBuffetTable
             items={PRESTIGE_BUFFET_DISHES}
-            eyebrow="DZ CATERING · HAUTE GASTRONOMIE"
             heading="Vous pouvez demander une dégustation de nos meilleurs plats"
             onAddDish={handleAddDish}
             action={
               <a
-                href="#contact"
-                className="inline-flex items-center gap-2.5 rounded-full bg-gradient-to-r from-[#ebdca9] via-[#cab67f] to-[#b39855] px-6 py-3 text-sm font-semibold text-[#20000e] shadow-xl shadow-gold-500/20 transition-all hover:scale-[1.02] hover:brightness-110 active:scale-[0.98]"
+                href="/devis-contact?mode=degustation"
+                className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-[#ebdca9] via-[#cab67f] to-[#b39855] px-7 py-3 text-sm font-semibold text-[#20000e] shadow-xl shadow-gold-500/20 transition-all hover:scale-[1.02] hover:brightness-110 active:scale-[0.98]"
               >
-                <Sparkles className="size-4" />
-                <span>Demander un Devis pour ce Menu</span>
+                <span>Réserver une Dégustation</span>
               </a>
             }
           />
@@ -176,7 +141,7 @@ export default function PrestigeBuffetSection() {
               ))}
             </div>
             <a
-              href="#contact"
+              href="/devis-contact?mode=degustation"
               className="text-xs font-semibold text-gold-400 underline underline-offset-4 hover:text-gold-200 transition-colors"
             >
               Finaliser le devis avec ces pièces &rarr;

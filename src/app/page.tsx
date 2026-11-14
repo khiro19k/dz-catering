@@ -3,8 +3,6 @@ import Hero from "@/components/Hero";
 import TrustProofSection from "@/components/TrustProofSection";
 import HomeFormulesOverview from "@/components/HomeFormulesOverview";
 import PrestigeBuffetSection from "@/components/PrestigeBuffetSection";
-import GallerySection from "@/components/GallerySection";
-import BespokeCurator from "@/components/BespokeCurator";
 import Footer from "@/components/Footer";
 
 export default function Home() {
@@ -16,8 +14,6 @@ export default function Home() {
         <TrustProofSection />
         <HomeFormulesOverview />
         <PrestigeBuffetSection />
-        <GallerySection />
-        <BespokeCurator />
       </main>
       <Footer />
     </div>

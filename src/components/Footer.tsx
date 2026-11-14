@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Phone, Mail, MapPin, Clock, ShieldCheck } from "lucide-react";
-import { CONTACT_INFO, SITE_NAVIGATION, CLIENT_REFERENCES } from "@/data/cateringData";
+import { Phone, Mail, MapPin, Clock } from "lucide-react";
+import { CONTACT_INFO, SITE_NAVIGATION } from "@/data/cateringData";
 
 function FacebookIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -44,7 +44,7 @@ export default function Footer() {
   return (
     <footer className="bg-[#320017] border-t border-gold-500/25 pt-16 pb-12 text-cream-200/90">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-12 mb-12">
           {/* Brand & Slogan */}
           <div className="space-y-4">
             <Link href="/" className="flex items-center gap-3">
@@ -128,26 +128,6 @@ export default function Footer() {
                     <span className="w-1.5 h-1.5 rounded-full bg-gold-400/60" />
                     <span>{link.title}</span>
                   </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Références Clients de Prestige */}
-          <div>
-            <h4 className="text-xs font-semibold uppercase tracking-widest text-gold-300 mb-4 font-sans">
-              Références Grands Comptes
-            </h4>
-            <ul className="space-y-2.5 text-xs text-cream-200/75">
-              {CLIENT_REFERENCES.map((ref, idx) => (
-                <li key={idx} className="flex items-start gap-2">
-                  <ShieldCheck className="w-3.5 h-3.5 text-gold-400 shrink-0 mt-0.5" />
-                  <div>
-                    <span className="text-white font-medium block">{ref.name}</span>
-                    <span className="text-[10px] text-gold-300/60 uppercase tracking-wider">
-                      {ref.category}
-                    </span>
-                  </div>
                 </li>
               ))}
             </ul>

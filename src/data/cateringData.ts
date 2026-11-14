@@ -78,33 +78,130 @@ export interface ClientReference {
   category?: string;
   initials: string;
   logo?: string;
+  frameWidth?: string;
+  logoSize?: string;
 }
 
 export const CLIENT_REFERENCES: ClientReference[] = [
   {
     name: "Centre International des Conférences (CIC Alger)",
+    category: "Palais des Congrès & Sommets d'État",
     initials: "CIC",
-    logo: "", // e.g. "/images/clients/cic.png"
+    logo: "/images/clients/cic.png",
+    frameWidth: "w-[170px] sm:w-[195px] md:w-[210px]",
+    logoSize: "h-[85px] sm:h-[100px] max-w-[90%]",
   },
   {
-    name: "Sheraton Hotels",
+    name: "Sheraton Hotels & Resorts",
+    category: "Hôtellerie 5 Étoiles & Réceptions VIP",
     initials: "SHERATON",
-    logo: "", // e.g. "/images/clients/sheraton.png"
+    logo: "/images/clients/sheraton.png",
+    frameWidth: "w-[220px] sm:w-[250px] md:w-[270px]",
+    logoSize: "h-[68px] sm:h-[80px] max-w-[88%]",
+  },
+  {
+    name: "UNICEF Algérie",
+    category: "Nations Unies & Diplomatie",
+    initials: "UNICEF",
+    logo: "/images/clients/unicef-blue.png",
+    frameWidth: "w-[270px] sm:w-[310px] md:w-[335px]",
+    logoSize: "h-[58px] sm:h-[70px] max-w-[90%]",
+  },
+  {
+    name: "PNUD Algérie",
+    category: "Programme des Nations Unies pour le Développement",
+    initials: "PNUD",
+    logo: "/images/clients/pnud.png",
+    frameWidth: "w-[220px] sm:w-[250px] md:w-[270px]",
+    logoSize: "h-[68px] sm:h-[80px] max-w-[88%]",
+  },
+  {
+    name: "Médiateur de la République (وسيط الجمهورية)",
+    category: "Institution Souveraine de l'État",
+    initials: "MR",
+    logo: "/images/clients/mediateur-republique.png",
+    frameWidth: "w-[175px] sm:w-[200px] md:w-[215px]",
+    logoSize: "h-[88px] sm:h-[102px] max-w-[90%]",
+  },
+  {
+    name: "Conseil National des Droits de l'Homme (CNDH)",
+    category: "Institution Constitutionnelle",
+    initials: "CNDH",
+    logo: "/images/clients/cndh.png",
+    frameWidth: "w-[230px] sm:w-[260px] md:w-[280px]",
+    logoSize: "h-[70px] sm:h-[82px] max-w-[88%]",
   },
   {
     name: "GE Healthcare",
+    category: "Multinationale & Technologies Médicales",
     initials: "GE",
-    logo: "", // e.g. "/images/clients/ge.png"
+    logo: "/images/clients/ge-healthcare.png",
+    frameWidth: "w-[230px] sm:w-[260px] md:w-[280px]",
+    logoSize: "h-[70px] sm:h-[82px] max-w-[88%]",
   },
   {
-    name: "Agence Nationale des Produits Pharmaceutiques (ANPP)",
-    initials: "ANPP",
-    logo: "", // e.g. "/images/clients/anpp.png"
+    name: "GE Vernova",
+    category: "Énergie & Grandes Infrastructures",
+    initials: "GE",
+    logo: "/images/clients/ge-vernova-teal.png",
+    frameWidth: "w-[290px] sm:w-[335px] md:w-[360px]",
+    logoSize: "h-[60px] sm:h-[72px] max-w-[92%]",
   },
   {
-    name: "ATS Satcom",
+    name: "Konrad-Adenauer-Stiftung (KAS)",
+    category: "Fondation Internationale & Coopération",
+    initials: "KAS",
+    logo: "/images/clients/kas.png",
+    frameWidth: "w-[275px] sm:w-[320px] md:w-[345px]",
+    logoSize: "h-[62px] sm:h-[74px] max-w-[90%]",
+  },
+  {
+    name: "SNC-Lavalin",
+    category: "Ingénierie & Grands Projets Industriels",
+    initials: "SNC",
+    logo: "/images/clients/snc-lavalin.png",
+    frameWidth: "w-[220px] sm:w-[250px] md:w-[270px]",
+    logoSize: "h-[68px] sm:h-[80px] max-w-[88%]",
+  },
+  {
+    name: "ATS Satcom Operator (اتصالات الجزائر الفضائية)",
+    category: "Télécommunications Spatiales & Satellite",
     initials: "ATS",
-    logo: "", // e.g. "/images/clients/ats.png"
+    logo: "/images/clients/ats.png",
+    frameWidth: "w-[230px] sm:w-[260px] md:w-[280px]",
+    logoSize: "h-[68px] sm:h-[80px] max-w-[88%]",
+  },
+  {
+    name: "École Nationale d'Administration (المدرسة الوطنية للإدارة)",
+    category: "Grande École de l'État Algérien",
+    initials: "ENA",
+    logo: "/images/clients/ena.png",
+    frameWidth: "w-[170px] sm:w-[195px] md:w-[210px]",
+    logoSize: "h-[88px] sm:h-[102px] max-w-[90%]",
+  },
+  {
+    name: "École Supérieure de Commerce (المدرسة العليا للتجارة)",
+    category: "Hautes Études Commerciales (Depuis 1900)",
+    initials: "ESC",
+    logo: "/images/clients/esc.png",
+    frameWidth: "w-[165px] sm:w-[190px] md:w-[205px]",
+    logoSize: "h-[85px] sm:h-[100px] max-w-[90%]",
+  },
+  {
+    name: "École Supérieure de la Sécurité Sociale (المدرسة العليا للضمان الاجتماعي)",
+    category: "Enseignement Supérieur Spécialisé",
+    initials: "ESSS",
+    logo: "/images/clients/esss.png",
+    frameWidth: "w-[165px] sm:w-[190px] md:w-[205px]",
+    logoSize: "h-[85px] sm:h-[100px] max-w-[90%]",
+  },
+  {
+    name: "École Nationale Supérieure de Management (المدرسة الوطنية العليا للمناجمنت)",
+    category: "Management & Hautes Décisions",
+    initials: "ENSM",
+    logo: "/images/clients/ensm.png",
+    frameWidth: "w-[300px] sm:w-[345px] md:w-[370px]",
+    logoSize: "h-[60px] sm:h-[72px] max-w-[92%]",
   },
 ];
 
@@ -263,7 +360,7 @@ export const CONTACT_INFO = {
   secondaryPhone: "0770 34 61 00",
   primaryPhoneIntl: "+213 770 86 89 74",
   secondaryPhoneIntl: "+213 770 34 61 00",
-  whatsappPhone: "213770868974",
+  whatsappPhone: "213770747986",
   email: "eurldzcatering@gmail.com",
   slogan: "Élégance, raffinement et service d'exception pour des événements à votre image",
   brandPromise: "Qualité, Luxe et Performance",

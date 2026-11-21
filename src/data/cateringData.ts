@@ -17,7 +17,7 @@ export interface HeroSettings {
 
 export const HERO_SETTINGS: HeroSettings = {
   desktop: {
-    video: "",
+    video: "https://pub-4b09f560d35546b091c2bfa02b65cc39.r2.dev/dz%20catering%20web%20site/lv_0_20261121125138.mp4",
     image: "/images/gallery/gala-banquet.jpg",
     titlePrimary: "Élégance, Raffinement",
     titleAccent: "& Service d'Exception",
@@ -356,9 +356,9 @@ export const RECRUITMENT_STEPS = [
 
 export const CONTACT_INFO = {
   companyName: "EURL DZ CATERING",
-  primaryPhone: "0770 86 89 74",
+  primaryPhone: "0770 74 79 86",
   secondaryPhone: "0770 34 61 00",
-  primaryPhoneIntl: "+213 770 86 89 74",
+  primaryPhoneIntl: "+213 770 74 79 86",
   secondaryPhoneIntl: "+213 770 34 61 00",
   whatsappPhone: "213770747986",
   email: "eurldzcatering@gmail.com",

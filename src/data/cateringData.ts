@@ -28,7 +28,7 @@ export const HERO_SETTINGS: HeroSettings = {
     secondaryCtaHref: "/formules-services",
   },
   mobile: {
-    video: "",
+    video: "https://pub-4b09f560d35546b091c2bfa02b65cc39.r2.dev/dz%20catering%20web%20site/lv_0_20261121133335.mp4",
     image: "/images/gallery/culinary-fine.jpg",
     titlePrimary: "Élégance, Raffinement",
     titleAccent: "& Service d'Exception",

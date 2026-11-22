@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { UserCheck, CheckCircle2, ChevronRight, Briefcase, FileText, Send, PhoneCall, UploadCloud, X } from "lucide-react";
+import { UserCheck, CheckCircle2, ChevronRight, Briefcase, FileText, Send, PhoneCall, UploadCloud, X, Loader2 } from "lucide-react";
 import { RECRUITMENT_STEPS, CONTACT_INFO } from "@/data/cateringData";
 
 export default function RecrutementPage() {
@@ -15,6 +15,9 @@ export default function RecrutementPage() {
   const [cvFile, setCvFile] = useState<File | null>(null);
   const [message, setMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [hpField, setHpField] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,10 +33,43 @@ export default function RecrutementPage() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!candidateName || !candidatePhone) return;
-    setSubmitted(true);
+
+    setIsSubmitting(true);
+    setSubmitError("");
+
+    try {
+      const formData = new FormData();
+      formData.append("candidateName", candidateName);
+      formData.append("candidatePhone", candidatePhone);
+      formData.append("candidateEmail", candidateEmail);
+      formData.append("jobRole", jobRole);
+      formData.append("experienceYears", experienceYears);
+      formData.append("message", message);
+      formData.append("hp_field", hpField);
+      if (cvFile) {
+        formData.append("cvFile", cvFile);
+      }
+
+      const res = await fetch("/api/recrutement", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Une erreur est survenue lors de l'envoi de votre candidature.");
+      }
+
+      setSubmitted(true);
+    } catch (err: any) {
+      console.error(err);
+      setSubmitError(err.message || "Erreur de transmission. Veuillez réessayer.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -161,6 +197,17 @@ export default function RecrutementPage() {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
+                  {/* Honeypot field for bot protection */}
+                  <div className="opacity-0 absolute -z-50 pointer-events-none select-none h-0 w-0 overflow-hidden" aria-hidden="true">
+                    <input
+                      type="text"
+                      name="website"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={hpField}
+                      onChange={(e) => setHpField(e.target.value)}
+                    />
+                  </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-[11px] uppercase tracking-wider font-semibold text-cream-100/80 mb-1.5">
@@ -320,12 +367,28 @@ export default function RecrutementPage() {
                     />
                   </div>
 
+                  {submitError && (
+                    <div className="p-3.5 rounded-xl bg-red-950/80 border border-red-500/50 text-red-200 text-xs">
+                      {submitError}
+                    </div>
+                  )}
+
                   <button
                     type="submit"
-                    className="w-full py-4 rounded-xl text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-gold-500 via-gold-400 to-gold-600 text-burgundy-950 hover:brightness-110 shadow-xl transition-all flex items-center justify-center gap-2"
+                    disabled={isSubmitting}
+                    className="w-full py-4 rounded-xl text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-gold-500 via-gold-400 to-gold-600 text-burgundy-950 hover:brightness-110 shadow-xl transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
                   >
-                    <span>Envoyer ma candidature</span>
-                    <ChevronRight className="w-4 h-4" />
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>Envoi de votre candidature en cours...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Envoyer ma candidature</span>
+                        <ChevronRight className="w-4 h-4" />
+                      </>
+                    )}
                   </button>
                 </form>
               )}

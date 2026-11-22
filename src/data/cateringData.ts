@@ -361,7 +361,7 @@ export const CONTACT_INFO = {
   primaryPhoneIntl: "+213 770 74 79 86",
   secondaryPhoneIntl: "+213 770 34 61 00",
   whatsappPhone: "213770747986",
-  email: "eurldzcatering@gmail.com",
+  email: "contact@dz-catering.com",
   slogan: "Élégance, raffinement et service d'exception pour des événements à votre image",
   brandPromise: "Qualité, Luxe et Performance",
   tagline: "Traiteur & Services hôteliers",

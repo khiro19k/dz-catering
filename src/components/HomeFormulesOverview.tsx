@@ -12,7 +12,7 @@ const PRESTIGE_OFFERS = [
     subtitle: "Formule Ordinaire, Améliorée, VIP, VVIP",
     tag: "Pauses Café",
     icon: Coffee,
-    image: "/images/gallery/buffet-gourmet.jpg",
+    image: "/images/gallery/formule-pause-cafe.webp",
     description:
       "2 à 3 pièces salées, 2 à 3 sucrées, gâteaux traditionnels orientaux, macarons parisiens, boissons chaudes et fraîches.",
   },
@@ -22,7 +22,7 @@ const PRESTIGE_OFFERS = [
     subtitle: "Prestations au plateau & buffets d'apparat",
     tag: "Cocktails",
     icon: Wine,
-    image: "/images/gallery/cocktail-reception.jpg",
+    image: "/images/gallery/formule-cocktails.webp",
     description:
       "Verrines fraîches (crevettes et saumon fumé), déclinaison de canapés salés, brochettes gourmandes, fromages affinés et fruits découpés.",
   },
@@ -32,7 +32,7 @@ const PRESTIGE_OFFERS = [
     subtitle: "Du déjeuner d'affaires au grand dîner assis",
     tag: "Déjeuners & Formules Box",
     icon: Utensils,
-    image: "/images/gallery/gala-banquet.jpg",
+    image: "/images/gallery/formule-dejeuners-box.webp",
     description:
       "Formule pratique 'Lunch Box' conçue pour les sessions de formation rythmées ou repas complet assis avec service à table par maîtres d'hôtel.",
   },

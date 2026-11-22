@@ -2,10 +2,20 @@ import type { Metadata } from "next";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import MobileBottomBar from "@/components/MobileBottomBar";
+import { Analytics } from "@vercel/analytics/react";
 
 export const metadata: Metadata = {
   title: "EURL DZ CATERING | Traiteur & Services Hôteliers | Douaouda & El Biar, Alger",
   description: "Maison traiteur d'exception et services hôteliers. Pauses café, cocktails, déjeuners et réceptions de prestige à Alger.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/icon.png", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-icon.png" },
+    ],
+  },
 };
 
 export default function RootLayout({
@@ -20,6 +30,7 @@ export default function RootLayout({
           {children}
         </SmoothScroll>
         <MobileBottomBar />
+        <Analytics />
       </body>
     </html>
   );

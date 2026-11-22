@@ -13,8 +13,12 @@ import {
   Check,
   Users,
   Send,
+  Coffee,
+  Calendar,
+  Clock,
+  Loader2,
 } from "lucide-react";
-import { CONTACT_INFO } from "@/data/cateringData";
+import { CONTACT_INFO, COFFEE_BREAK_PACKAGES } from "@/data/cateringData";
 
 function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -102,6 +106,9 @@ function DevisContactContent() {
   const mode = searchParams.get("mode");
 
   const [selectedFormats, setSelectedFormats] = useState<string[]>(["pauses-cafe"]);
+  const [selectedCoffeePackages, setSelectedCoffeePackages] = useState<string[]>([
+    "amelioree",
+  ]);
   const [guestCount, setGuestCount] = useState<number>(50);
   const [selectedOptions, setSelectedOptions] = useState<string[]>([
     "service-maitres",
@@ -116,9 +123,13 @@ function DevisContactContent() {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [eventDate, setEventDate] = useState("");
+  const [eventTimeSlot, setEventTimeSlot] = useState("Matinée (08h00 - 12h00)");
   const [eventLocation, setEventLocation] = useState("");
   const [clientNotes, setClientNotes] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [hpField, setHpField] = useState("");
 
   useEffect(() => {
     if (mode === "degustation") {
@@ -137,6 +148,17 @@ function DevisContactContent() {
     });
   };
 
+  const toggleCoffeePackage = (pkgId: string) => {
+    setSelectedCoffeePackages((prev) => {
+      if (prev.includes(pkgId)) {
+        if (prev.length === 1) return prev; // keep at least one selected
+        return prev.filter((item) => item !== pkgId);
+      } else {
+        return [...prev, pkgId];
+      }
+    });
+  };
+
   const toggleOption = (id: string) => {
     setSelectedOptions((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
@@ -147,26 +169,73 @@ function DevisContactContent() {
     selectedFormats.includes(f.id)
   );
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!companyName || !phone) return;
-    setSubmitted(true);
-  };
-
   // Build real-time customized WhatsApp message
+  const selectedCoffeePackageNames = selectedCoffeePackages
+    .map((id) => COFFEE_BREAK_PACKAGES.find((p) => p.id === id)?.name)
+    .filter(Boolean);
+
   const selectedFormatTitles = selectedFormatsList
-    .map((f) => `${f.title} (${f.subtitle})`)
+    .map((f) => {
+      if (f.id === "pauses-cafe" && selectedCoffeePackageNames.length > 0) {
+        return `${f.title} [${selectedCoffeePackageNames.join(", ")}]`;
+      }
+      return `${f.title} (${f.subtitle})`;
+    })
     .join(" + ");
 
   const selectedOptionsTitles = selectedOptions
     .map((id) => HOSPITALITY_OPTIONS.find((opt) => opt.id === id)?.title)
     .filter(Boolean);
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!companyName || !phone) return;
+    setIsSubmitting(true);
+    setSubmitError("");
+
+    try {
+      const res = await fetch("/api/devis", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          companyName,
+          contactName,
+          phone,
+          email,
+          eventDate,
+          eventTimeSlot,
+          eventLocation,
+          guestCount,
+          selectedFormats: selectedFormatsList.map((f) => f.title),
+          selectedCoffeePackages: selectedCoffeePackageNames,
+          selectedOptions: selectedOptionsTitles,
+          wantTasting,
+          clientNotes,
+          hp_field: hpField,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Une erreur est survenue lors de l'envoi.");
+      }
+
+      setSubmitted(true);
+    } catch (err: any) {
+      console.error(err);
+      setSubmitError(
+        err.message || "Erreur de transmission. Vous pouvez également nous contacter directement sur WhatsApp."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const whatsappMessage = `Bonjour EURL DZ CATERING, je souhaite obtenir un devis personnalisé :
 - Formats retenus : ${selectedFormatTitles}
 - Convives : ${guestCount} personnes
 - Prestations : ${selectedOptionsTitles.join(" / ")}
-- Séance de Dégustation : ${wantTasting ? "Oui, souhaitée" : "Non requise"}${companyName ? `\n- Entreprise : ${companyName}` : ""}${contactName ? `\n- Responsable : ${contactName}` : ""}${phone ? `\n- Téléphone : ${phone}` : ""}${eventDate ? `\n- Date : ${eventDate}` : ""}${eventLocation ? `\n- Lieu : ${eventLocation}` : ""}`;
+- Séance de Dégustation : ${wantTasting ? "Oui, souhaitée" : "Non requise"}${companyName ? `\n- Entreprise : ${companyName}` : ""}${contactName ? `\n- Responsable : ${contactName}` : ""}${phone ? `\n- Téléphone : ${phone}` : ""}${eventDate ? `\n- Date & Agenda : ${eventDate} (${eventTimeSlot})` : ""}${eventLocation ? `\n- Lieu : ${eventLocation}` : ""}`;
 
   const whatsappUrl = `https://wa.me/${CONTACT_INFO.whatsappPhone}?text=${encodeURIComponent(
     whatsappMessage
@@ -187,6 +256,17 @@ function DevisContactContent() {
         {/* Content Container (Full Width Flow with Summary at Bottom) */}
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <form onSubmit={handleSubmit} className="space-y-8 sm:space-y-10">
+            {/* Honeypot field for bot protection (invisible to humans) */}
+            <div className="opacity-0 absolute -z-50 pointer-events-none select-none h-0 w-0 overflow-hidden" aria-hidden="true">
+              <input
+                type="text"
+                name="fax_number"
+                tabIndex={-1}
+                autoComplete="off"
+                value={hpField}
+                onChange={(e) => setHpField(e.target.value)}
+              />
+            </div>
             {/* Step 1: Format Selector */}
             <div className="bg-[#460021]/80 border border-gold-500/25 rounded-3xl p-6 sm:p-8 backdrop-blur-md shadow-xl">
               <div className="flex items-center justify-between mb-5">
@@ -246,6 +326,78 @@ function DevisContactContent() {
                   );
                 })}
               </div>
+
+              {/* Sub-varieties for Formules Pause Café */}
+              {selectedFormats.includes("pauses-cafe") && (
+                <div className="mt-6 pt-6 border-t border-gold-500/30 animate-fade-in space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-full bg-gold-500/20 border border-gold-400/50 flex items-center justify-center text-gold-300 shrink-0">
+                        <Coffee className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <h4 className="text-sm sm:text-base font-bold font-serif text-white tracking-wide">
+                          Variantes & Gammes Pause Café Disponibles
+                        </h4>
+                        <p className="text-[11px] text-cream-200/70">
+                          Sélectionnez la ou les formules adaptées au standing de votre événement
+                        </p>
+                      </div>
+                    </div>
+                    <span className="text-[10px] px-2.5 py-1 rounded-full bg-gold-500/15 border border-gold-500/40 text-gold-300 font-medium self-start sm:self-auto shrink-0">
+                      {selectedCoffeePackages.length} sélectionnée(s)
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    {COFFEE_BREAK_PACKAGES.map((pkg) => {
+                      const isPkgSelected = selectedCoffeePackages.includes(pkg.id);
+                      return (
+                        <div
+                          key={pkg.id}
+                          onClick={() => toggleCoffeePackage(pkg.id)}
+                          className={`p-4 rounded-2xl text-left transition-all duration-300 flex flex-col justify-between border cursor-pointer relative ${
+                            isPkgSelected
+                              ? "bg-gradient-to-b from-[#6b0033] to-[#480022] border-gold-400 ring-2 ring-gold-400/40 shadow-xl shadow-black/40 scale-[1.01]"
+                              : "bg-white/5 border-white/10 hover:border-gold-500/30 hover:bg-white/[0.08]"
+                          }`}
+                        >
+                          {pkg.highlight && (
+                            <span className="absolute -top-2.5 right-3 text-[9px] px-2.5 py-0.5 rounded-full bg-gradient-to-r from-gold-500 to-gold-400 text-burgundy-950 font-bold uppercase tracking-wider shadow-md">
+                              Recommandé
+                            </span>
+                          )}
+
+                          <div>
+                            <div className="flex items-center justify-between mb-2">
+                              <h5 className="text-xs sm:text-sm font-bold font-serif text-white">
+                                {pkg.name}
+                              </h5>
+                              <span
+                                className={`w-4 h-4 rounded-md border flex items-center justify-center shrink-0 transition-colors ${
+                                  isPkgSelected
+                                    ? "bg-gold-500 border-gold-400 text-burgundy-950"
+                                    : "border-gold-500/40 bg-white/5"
+                                }`}
+                              >
+                                {isPkgSelected && <Check className="w-3 h-3 stroke-[3]" />}
+                              </span>
+                            </div>
+
+                            <p className="text-[11px] text-cream-100/90 leading-relaxed font-light">
+                              {pkg.content}
+                            </p>
+                          </div>
+
+                          <div className="mt-3 pt-2.5 border-t border-white/10 text-[10px] text-gold-300/85 font-medium leading-snug">
+                            {pkg.audience}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Step 2: Guest Scale Slider */}
@@ -408,27 +560,53 @@ function DevisContactContent() {
                   </div>
                 </div>
 
-                {/* Date & Location */}
+                {/* Date & Location with Interactive Agenda Picker */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[11px] uppercase tracking-wider font-semibold text-cream-100/80 mb-1.5">
-                      Date & Créneau Horaire
+                    <label className="block text-[11px] uppercase tracking-wider font-semibold text-cream-100/80 mb-1.5 flex items-center justify-between">
+                      <span className="flex items-center gap-1.5">
+                        <Calendar className="w-3.5 h-3.5 text-gold-400" />
+                        <span>Date de l'Événement (Agenda) *</span>
+                      </span>
+                      <span className="text-[10px] text-gold-300/80 font-normal">
+                        Sélectionnez sur l'agenda
+                      </span>
                     </label>
-                    <input
-                      type="text"
-                      placeholder="Ex : 15 Décembre, 10h00"
-                      value={eventDate}
-                      onChange={(e) => setEventDate(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl bg-burgundy-950/70 border border-gold-500/30 text-white placeholder-cream-200/30 text-xs focus:outline-none focus:border-gold-400 transition-colors"
-                    />
+                    <div className="relative">
+                      <input
+                        type="date"
+                        min={new Date().toISOString().split("T")[0]}
+                        value={eventDate}
+                        onChange={(e) => setEventDate(e.target.value)}
+                        className="w-full px-4 py-3 rounded-xl bg-burgundy-950/70 border border-gold-500/30 text-white text-xs focus:outline-none focus:border-gold-400 transition-colors [color-scheme:dark] cursor-pointer"
+                      />
+                    </div>
                   </div>
                   <div>
-                    <label className="block text-[11px] uppercase tracking-wider font-semibold text-cream-100/80 mb-1.5">
-                      Lieu Prévu de la Réception
+                    <label className="block text-[11px] uppercase tracking-wider font-semibold text-cream-100/80 mb-1.5 flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5 text-gold-400" />
+                      <span>Créneau Horaire</span>
+                    </label>
+                    <select
+                      value={eventTimeSlot}
+                      onChange={(e) => setEventTimeSlot(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl bg-burgundy-950/70 border border-gold-500/30 text-white text-xs focus:outline-none focus:border-gold-400 transition-colors cursor-pointer"
+                    >
+                      <option value="Matinée (08h00 - 12h00)">Matinée (08h00 - 12h00)</option>
+                      <option value="Déjeuner (12h00 - 15h00)">Déjeuner (12h00 - 15h00)</option>
+                      <option value="Après-midi (14h00 - 18h00)">Après-midi (14h00 - 18h00)</option>
+                      <option value="Soirée / Dîner (18h00 - 23h00)">Soirée / Dîner (18h00 - 23h00)</option>
+                      <option value="Journée Complète">Journée Complète</option>
+                    </select>
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="block text-[11px] uppercase tracking-wider font-semibold text-cream-100/80 mb-1.5 flex items-center gap-1.5">
+                      <MapPin className="w-3.5 h-3.5 text-gold-400" />
+                      <span>Lieu Prévu de la Réception</span>
                     </label>
                     <input
                       type="text"
-                      placeholder="Ex : Alger, Siège, Palais des Congrès..."
+                      placeholder="Ex : Alger, Siège, Palais des Congrès, Salle des Fêtes..."
                       value={eventLocation}
                       onChange={(e) => setEventLocation(e.target.value)}
                       className="w-full px-4 py-3 rounded-xl bg-burgundy-950/70 border border-gold-500/30 text-white placeholder-cream-200/30 text-xs focus:outline-none focus:border-gold-400 transition-colors"
@@ -502,6 +680,28 @@ function DevisContactContent() {
                         </span>
                       ))}
                     </div>
+
+                    {selectedFormats.includes("pauses-cafe") && selectedCoffeePackages.length > 0 && (
+                      <div className="mt-2.5 pt-2 border-t border-gold-500/15">
+                        <span className="text-gold-300/80 block text-[11px] font-medium mb-1">
+                          Gamme(s) Pause Café ({selectedCoffeePackages.length}) :
+                        </span>
+                        <div className="flex flex-wrap gap-1.5">
+                          {selectedCoffeePackages.map((id) => {
+                            const pkg = COFFEE_BREAK_PACKAGES.find((p) => p.id === id);
+                            if (!pkg) return null;
+                            return (
+                              <span
+                                key={pkg.id}
+                                className="px-2 py-0.5 rounded-md bg-gold-500/15 border border-gold-400/40 text-[11px] text-gold-300 font-medium"
+                              >
+                                {pkg.name}
+                              </span>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <div>
@@ -539,6 +739,18 @@ function DevisContactContent() {
                       {wantTasting ? "Demandée (Validée)" : "Non demandée"}
                     </span>
                   </div>
+
+                  {eventDate && (
+                    <div className="pt-2 border-t border-gold-500/15">
+                      <span className="text-cream-200/60 block text-xs uppercase tracking-wider mb-1">
+                        Date & Créneau (Agenda) :
+                      </span>
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-gold-500/15 border border-gold-400/40 text-xs text-gold-300 font-medium">
+                        <Calendar className="w-3.5 h-3.5 text-gold-400" />
+                        {eventDate} ({eventTimeSlot})
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -566,14 +778,31 @@ function DevisContactContent() {
                   </p>
                 </div>
               ) : (
-                <button
-                  type="submit"
-                  className="w-full py-4 sm:py-5 rounded-2xl text-xs sm:text-sm font-bold uppercase tracking-wider bg-gradient-to-r from-gold-500 via-gold-400 to-gold-600 text-burgundy-950 hover:brightness-110 shadow-2xl shadow-gold-500/30 transition-all hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer"
-                >
-                  <Send className="w-4 h-4 sm:w-5 sm:h-5" />
-                  <span>Transmettre ma Demande de Devis Express</span>
-                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
-                </button>
+                <div className="space-y-3">
+                  {submitError && (
+                    <div className="p-3.5 rounded-xl bg-red-950/80 border border-red-500/50 text-red-200 text-xs">
+                      {submitError}
+                    </div>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full py-4 sm:py-5 rounded-2xl text-xs sm:text-sm font-bold uppercase tracking-wider bg-gradient-to-r from-gold-500 via-gold-400 to-gold-600 text-burgundy-950 hover:brightness-110 shadow-2xl shadow-gold-500/30 transition-all hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
+                        <span>Transmission en cours...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4 sm:w-5 sm:h-5" />
+                        <span>Transmettre ma Demande de Devis Express</span>
+                        <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </>
+                    )}
+                  </button>
+                </div>
               )}
             </div>
           </form>

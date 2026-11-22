@@ -224,7 +224,9 @@ function DevisContactContent() {
     } catch (err: any) {
       console.error(err);
       setSubmitError(
-        err.message || "Erreur de transmission. Vous pouvez également nous contacter directement sur WhatsApp."
+        err.message?.includes("ECONN") || err.message?.includes("ETIMEDOUT") || err.message?.includes("Erreur")
+          ? "Erreur temporaire de liaison au serveur e-mail. Vos paramètres sont conservés : vous pouvez nous transmettre votre devis en 1 clic sur WhatsApp ci-dessous."
+          : err.message || "Erreur de transmission. Vous pouvez également nous contacter directement sur WhatsApp."
       );
     } finally {
       setIsSubmitting(false);

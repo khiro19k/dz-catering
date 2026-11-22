@@ -7,6 +7,7 @@ import {
   sanitizeHeader,
   isValidEmail,
   isValidPhone,
+  sendEmailWithFallback,
 } from "@/lib/security";
 
 export async function POST(req: Request) {
@@ -93,16 +94,6 @@ export async function POST(req: Request) {
         message: "Simulation réussie.",
       });
     }
-
-    const transporter = nodemailer.createTransport({
-      host,
-      port,
-      secure: port === 465,
-      auth: {
-        user,
-        pass,
-      },
-    });
 
     // 4. Strict HTML Escaping against Stored XSS / HTML Injection in email clients
     const safeFormats = Array.isArray(selectedFormats)
@@ -232,7 +223,7 @@ export async function POST(req: Request) {
     // 5. Header Injection Protection
     const replyTo = safeEmail && isValidEmail(safeEmail) ? safeEmail : user;
 
-    await transporter.sendMail({
+    await sendEmailWithFallback(host, user, pass, port, {
       from: `"DZ CATERING Web" <${user}>`,
       to: toEmail,
       replyTo,

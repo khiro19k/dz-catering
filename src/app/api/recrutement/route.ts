@@ -8,6 +8,7 @@ import {
   isValidEmail,
   isValidPhone,
   sanitizeFileName,
+  sendEmailWithFallback,
 } from "@/lib/security";
 
 const JOB_ROLE_LABELS: Record<string, string> = {
@@ -141,13 +142,6 @@ export async function POST(req: Request) {
       });
     }
 
-    const transporter = nodemailer.createTransport({
-      host,
-      port,
-      secure: port === 465,
-      auth: { user, pass },
-    });
-
     const roleLabel = JOB_ROLE_LABELS[jobRole] || "Personnel de Réception";
     const expLabel = EXP_LABELS[experienceYears] || "Expérience confirmée";
 
@@ -235,7 +229,7 @@ export async function POST(req: Request) {
 
     const replyTo = safeEmail && isValidEmail(safeEmail) ? safeEmail : user;
 
-    await transporter.sendMail({
+    await sendEmailWithFallback(host, user, pass, port, {
       from: `"DZ CATERING Recrutement" <${user}>`,
       to: toEmail,
       replyTo,

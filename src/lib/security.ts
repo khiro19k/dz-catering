@@ -1,3 +1,5 @@
+import nodemailer, { type SendMailOptions } from "nodemailer";
+
 // In-memory sliding window rate limiting
 const rateLimitMap = new Map<string, number[]>();
 
@@ -102,5 +104,51 @@ export function isValidPhone(phone: unknown): boolean {
  */
 export function sanitizeFileName(name: string): string {
   return name.replace(/[/\\?%*:|"<>]/g, "").replace(/\.\./g, "").trim() || "document";
+}
+
+/**
+ * Robust SMTP delivery with auto-fallback between Port 587 (STARTTLS) and Port 465 (SSL)
+ * and strict SNI headers to prevent ECONNRESET on cloud platforms like Vercel.
+ */
+export async function sendEmailWithFallback(
+  host: string,
+  user: string,
+  pass: string,
+  preferredPort: number,
+  mailOptions: SendMailOptions
+) {
+  // Try port 587 first on serverless cloud (Hostinger prefers STARTTLS from AWS/Vercel)
+  const portsToTry = preferredPort === 465 ? [587, 465] : [preferredPort, 465, 587];
+  const uniquePorts = Array.from(new Set(portsToTry));
+
+  let lastError: any = null;
+
+  for (const port of uniquePorts) {
+    const isPort465 = port === 465;
+    try {
+      const transporter = nodemailer.createTransport({
+        host,
+        port,
+        secure: isPort465,
+        requireTLS: !isPort465,
+        auth: { user, pass },
+        tls: {
+          servername: host,
+          rejectUnauthorized: false,
+        },
+        connectionTimeout: 12000,
+        greetingTimeout: 8000,
+        socketTimeout: 12000,
+      });
+
+      const info = await transporter.sendMail(mailOptions);
+      return info;
+    } catch (err: any) {
+      console.warn(`[SMTP Warning] Delivery on port ${port} failed (${err.code || err.message}). Trying fallback port...`);
+      lastError = err;
+    }
+  }
+
+  throw lastError;
 }
 

@@ -5,8 +5,16 @@ import { ShieldCheck, Clock, Award, Users, CheckCircle2, MapPin, ArrowRight, Pho
 import { CONTACT_INFO, CLIENT_REFERENCES, ENGAGEMENT_PILLARS } from "@/data/cateringData";
 
 export const metadata = {
-  title: "À Propos & Engagements | EURL DZ CATERING",
-  description: "Présentation de l'EURL DZ CATERING, implantée à Douaouda et El Biar. Nos 4 engagements majeurs : hygiène HACCP, réactivité 4h et flexibilité.",
+  title: "À Propos & Engagements | 15 Ans d'Excellence Hôtelière à Alger",
+  description:
+    "Présentation officielle de l'EURL DZ CATERING (Douaouda & El Biar). Nos 4 piliers d'engagement : respect strict des normes HACCP, intervention express en 4h, flexibilité sur-mesure et service d'exception.",
+  openGraph: {
+    title: "À Propos & Engagements | EURL DZ CATERING",
+    description:
+      "15 ans d'excellence traiteur et services hôteliers à Alger. Respect strict des normes HACCP, intervention express en 4h et service par maîtres d'hôtel dédiés.",
+    url: "https://dz-catering.com/a-propos",
+    images: [{ url: "/images/og-image.jpg", width: 1200, height: 630 }],
+  },
 };
 
 export default function AProposPage() {

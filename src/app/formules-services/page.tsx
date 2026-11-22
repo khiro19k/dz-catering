@@ -5,8 +5,16 @@ import { ArrowRight, Check, Users, Coffee, UtensilsCrossed, Box, Sparkles } from
 import { COFFEE_BREAK_PACKAGES, SERVICE_OFFERS, CONTACT_INFO } from "@/data/cateringData";
 
 export const metadata = {
-  title: "Nos Formules & Services | EURL DZ CATERING",
-  description: "Découvrez nos pauses café (Ordinaire, Améliorée, VIP, VVIP), cocktails déjeunatoires, lunch boxes et déjeuners assis à Alger.",
+  title: "Nos Formules & Services | Pauses Café, Cocktails & Banquets d'Apparat",
+  description:
+    "Découvrez nos prestations traiteur à Alger : 4 gammes de pauses café (Ordinaire, Améliorée, VIP, VVIP), cocktails dînatoires raffinés, lunch boxes hermétiques et déjeuners assis avec maîtres d'hôtel.",
+  openGraph: {
+    title: "Nos Formules & Services | EURL DZ CATERING",
+    description:
+      "Pauses café VIP, cocktails dînatoires raffinés, coffrets repas hermétiques et banquets d'apparat avec maîtres d'hôtel dédiés à Alger.",
+    url: "https://dz-catering.com/formules-services",
+    images: [{ url: "/images/og-image.jpg", width: 1200, height: 630 }],
+  },
 };
 
 export default function FormulesServicesPage() {
